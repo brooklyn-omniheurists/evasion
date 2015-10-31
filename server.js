@@ -204,7 +204,7 @@ function sendMove(nextMove) {
         //console.log("Even Time: " + time);
         if (hMoves.length != 0) {
             hNextMove = hMoves[0];
-            moves.splice(0,1);
+            hMoves.splice(0,1);
             hNextMove.fun(hNextMove.data);
             time++;
              connection1.send(JSON.stringify({
@@ -337,6 +337,7 @@ movePrey = function(position, cardDir, walls) {
   n = move(position, cardDir);
   for (i = 0, len = walls.length; i < len; i++) {
     w = walls[i];
+  }
   for (i = 0, len = walls.length; i < len; i++) {
     w = walls[i];
     if (isPointOnWall(n, w)) {
