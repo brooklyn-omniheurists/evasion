@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <TITLE>Evasion</TITLE>
+    
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://raphaeljs.com/plugins/raphael.path.methods.js" type="text/javascript" charset="utf-8"></script>-->
+</HEAD>
+
+<BODY >
+<H1>Evasion</H1>
+
+    <select>
+     <option>SW</option>
+        <option>SE</option>
+        <option>NW</option>
+        <option>NE</option>
+        <option>N</option>
+        <option>S</option>
+        <option>E</option>
+        <option>W</option>
+    </select>
+    <input id="pCommand" value="Execute" type="button"></input>
+
+<script type="text/javascript">
+
+    var mainSocket = new WebSocket('ws://localhost:1990');
+    var socketH = new WebSocket('ws://localhost:1991');
+    var socketP = new WebSocket('ws://localhost:1992');
+    
+    socketH.onopen = function (e) {
+        console.log("OPEN");
+    }
+    
+    mainSocket.onmessage = function(e){
+        console.log("Publisher: " + e.data);
+    };
+    
+    socketH.onmessage = function(e){
+        console.log("Hunter: " + e.data);
+    };
+    
+    socketP.onmessage = function(e){
+        console.log("Prey: " + e.data);
+    };
+     
+    mainSocket.onerror = socketH.onerror = socketP.onerror = function (error) {
+        console.log('WebSocket error: ' + error);
+    };
+    
+    console.log("TEST");
+    
+    pCommand.onclick = function() {
+        //Hunter asks for positions
+        socketH.send(JSON.stringify({command:'P'}));
+        // Hunter asks to build wall of length 2 South, and moves
+        socketH.send(JSON.stringify(
+                        {
+                            command:'B',
+                            wall: { 
+                                    length: 2,
+                                    direction: 'S'
+                                  }
+                        }));
+        // Hunter asks for walls
+        socketH.send(JSON.stringify({command:'W'}));
+        // Hunter deletes walls
+        socketH.send(JSON.stringify(
+                        {
+                            command:'D',
+                            wallIndex: 0
+                        }));
+        // Prey asks for walls
+        socketP.send(JSON.stringify({command:'W'}));
+        //
+        socketP.send(JSON.stringify(
+                        {
+                            command:'M',
+                            direction: 'N'
+                        }));
+        socketH.send(JSON.stringify({command:'M'}));
+
+    };
+    //console.log(); 
+
+
+</script>
+
+
+</BODY>
+</HTML>
