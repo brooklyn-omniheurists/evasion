@@ -25,20 +25,20 @@ __Instructions:__
     
 ``````
 
-  v0.10.25
-
 `````
 
     nodejs server.js
 
 `````
 
-  v0.10.36
+or
 
 `````
 
     node server.js
     
 `````
+
+^ if you are running on energon2 you have latter command. Test locally or change ports if you are running on energon to avoid conflicts
 
 
