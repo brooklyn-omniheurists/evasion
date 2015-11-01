@@ -1,4 +1,23 @@
-# Application interface
+# Application Interface
+## ws:localhost:1990 (Publisher's Port)
+### Publishes Turn Results
+__Produces__
+```javascript
+ {
+    hunter: [0,0],
+    prey: [230,200],
+    wall: [
+           { 
+             "length" : 4,
+             "position": [1,0],
+             "direction":"E"
+           }, ...
+          ],
+    time: INTEGER_VALUE,
+    gameover: false
+}
+```
+
 ## ws:localhost:1991 (Hunter's Port)
 ### Building walls
 __Consumes__
@@ -59,7 +78,7 @@ __Produces__
   "prey": [230,200]
 }
 ```
-Get Walls
+### Get Walls
 __Consumes__
 ```javascript
 {
