@@ -179,7 +179,7 @@ function processHunter(data) {
         // data.wall.position = move(hunterPos,properDirection);
         var parsedWall = {};
         parsedWall.length = data.wall.length;
-        parsedWall.position = move(hunterPos,properDirection);
+        parsedWall.position = hunterPos;
         parsedWall.direction = properDirection;
         //console.log("POSITION: " + data.wall.position);
         var valid =  isValidWall(parsedWall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos, data);
@@ -334,16 +334,25 @@ moveHunter = function(p, cardinalDirection, walls, depth, original1, original2) 
   if (original2 == null) {
     original2 = 0;
   }
-  newPosition = move(p, cardinalDirection);
   returnVal = {
     newPosition: p,
     direction: cardinalDirection
   };
+  if(cardinalDirection == null){
+    newDir = [original1 * -1, original2 * -1];
+    newDir = getCardinalDirection(newDir);
+    returnVal.direction = newDir;
+    return returnVal;
+  }
+
+  newPosition = move(p, cardinalDirection);
+
   if (depth === 0) {
-    return {
+    returnVal = {
       newPosition: p,
       direction: cardinalDirection
     };
+    return returnVal;
   }
   for (i = 0, len = walls.length; i < len; i++) {
     w = walls[i];
@@ -352,14 +361,14 @@ moveHunter = function(p, cardinalDirection, walls, depth, original1, original2) 
         if (cardinalDirection === cardinalDirections.E || cardinalDirection === cardinalDirections.W) {
           return moveHunter(p, getCardinalDirection([cardinalDirection[0] * -1, 0]), walls, depth - 1, cardinalDirection[0], original2 );
         } else  {
-          return moveHunter(p, getCardinalDirection([cardinalDirection[0], cardinalDirection[1] * -1]), walls, depth - 1, original1, cardinalDirection[1]);
+          return moveHunter(p, getCardinalDirection([cardinalDirection[0], 0]), walls, depth - 1, original1, cardinalDirection[1]);
         }
       }
       if (w.direction === cardinalDirections.N || w.direction === cardinalDirections.S) {
         if (cardinalDirection === cardinalDirections.N || cardinalDirection === cardinalDirections.S) {
           return moveHunter(p, getCardinalDirection([0, cardinalDirection[1] * -1]), walls, depth - 1, original1 , cardinalDirection[1]);
         } else {
-          return moveHunter(p, getCardinalDirection([cardinalDirection[0] *-1, cardinalDirection[1]]), walls, depth - 1, cardinalDirection[0], original2 );
+          return moveHunter(p, getCardinalDirection([0, cardinalDirection[1]]), walls, depth - 1, cardinalDirection[0], original2 );
         }
       }
     } else {
@@ -470,7 +479,11 @@ isWallIntersecting = function(newWall, walls) {
 };
 
 isWallIntersectingHunter = function(newWall, hunterPosition) {
-  return isPointOnWall(hunterPosition,newWall);
+  var wall = {};
+  wall.length = newWall.length;
+  wall.position = move(hunterPosition, newWall.direction);
+  wall.direction = newWall.direction;
+  return isPointOnWall(hunterPosition,wall);
 };
 
 isWallIntersectingPrey = function(newWall, preyPosition) {
@@ -478,13 +491,24 @@ isWallIntersectingPrey = function(newWall, preyPosition) {
 };
 
 isSquished = function(hunterPos, hunterDir, walls) {
-  var newPos;
+  var newPos, newerPos, evenNewerPos;
+
   newPos = moveHunter(hunterPos, hunterDir, walls);
-  return newPos.cardinalDirection === cardinalDirections.E || newPos.cardinalDirection === cardinalDirections.W || newPos.cardinalDirection === cardinalDirections.N || newPos.cardinalDirection === cardinalDirections.S;
+  newerPos = moveHunter(newPos.newPosition, newPos.direction, walls);
+  evenNewerPos = moveHunter(newerPos.newPosition, newerPos.direction, walls);
+  if(newPos.newPosition[0] == newerPos.newPosition[0] &&
+     newPos.newPosition[1] == newerPos.newPosition[1] &&
+     evenNewerPos.newPosition[0] == newerPos.newPosition[0] &&
+     evenNewerPos.newPosition[1] == newerPos.newPosition[1]  )
+    return true;
+  return false;
 };
 
 willWallCauseSquishing = function(newWall, walls, hunterPosition, hunterDir) {
-  return isSquished(hunterPosition, hunterDir, walls.concat(newWall));
+  var newPosWOWall, ret;
+  newPosWOWall = moveHunter(hunterPosition, hunterDir, walls);
+  ret = isPointOnWall(newPosWOWall.newPosition,newWall);
+  return ret || isSquished(hunterPosition, hunterDir, walls.concat(newWall));
 };
 
 hasHunterWon = function(hunterPos, preyPos, walls) {
