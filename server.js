@@ -132,7 +132,7 @@ preySocket.on('request', function(request) {
     });
 });
 
-var hunterPos = [295,295];
+var hunterPos = [0,0];
 var preyPos = [230,200];
 var hunterDir = cardinalDirections.SE;
 
