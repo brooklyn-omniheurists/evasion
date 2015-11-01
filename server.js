@@ -35,6 +35,15 @@ Wall = (function() {
 
   })();
 
+var errorCodes = {
+      1: "This wall intersects another wall",
+      2: "This wall intersects the hunter",
+      3: "This wall intersects the prey",
+      4: "This wall causes squishing",
+      5: "Not enough time has elapsed since last build",
+      6: "You've built too many walls brother. Time to start thinking about tearing them down."
+  };
+
 Error = (function() {
   function Error(message, reason, data) {
     this.message = message;
@@ -177,7 +186,7 @@ function processHunter(data) {
         if (valid) {
           var error;
           if(buildWallCoolingDown(time, timeSinceLastBuild, COOL_DOWN_TIME)) {
-            error = new Error("Wall could not be built.", "Not enough time has elapsed since last build", data);
+            error = new Error("Wall could not be built.", errorCodes.5, data);
             errorList.push(error);
           } else if(numWallsIsMaxed(MAX_WALLS,walls)){
             error = new Error("Wall could not be built.", "You've built too many walls brother. Time to start thinking about tearing them down.", data);
