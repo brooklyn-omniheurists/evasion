@@ -137,11 +137,15 @@ function processHunter(data) {
         properDirection = getProperDirection(data.wall.direction);
         //console.log(properDirection);
         //console.log(properDirection);
-        data.wall.position = move(hunterPos,properDirection);
+        // data.wall.position = move(hunterPos,properDirection);
+        var parsedWall = {};
+        parsedWall.length = data.wall.length;
+        parsedWall.position = move(hunterPos,properDirection);
+        parsedWall.direction = properDirection;
         //console.log("POSITION: " + data.wall.position);
-        var valid =  isValidWall(data.wall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos);
+        var valid =  isValidWall(parsedWall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos);
         if (valid) {
-            walls.push(data.wall);
+            walls.push(parsedWall);
         }
         validCommand = true;
     }
@@ -171,14 +175,9 @@ function processPrey(data) {
     console.log("processPrey");
     var properDirection = cardinalDirections.N;
     if (data.command == 'M') {
-        if (data.direction == null) {
-            data.direction = [0,0];
-        }
-
         properDirection = getProperDirection(data.direction);
-     
-        preyPos = movePrey(preyPos,properDirection,walls.concat(globalWalls));
-
+        if(properDirection != null)
+          preyPos = movePrey(preyPos,properDirection,walls.concat(globalWalls));
     }
 }
 
@@ -302,16 +301,16 @@ moveHunter = function(p, cardinalDirection, walls, depth, original1, original2) 
     if (isPointOnWall(newPosition, w)) {
       if (w.direction === cardinalDirections.E || w.direction === cardinalDirections.W) {
         if (cardinalDirection === cardinalDirections.E || cardinalDirection === cardinalDirections.W) {
-          return moveHunter(p, getCardinalDirection([cardinalDirection[0] * -1, 0]), walls, depth - 1, cardinalDirection[0], original2 * -1);
-        } else {
-          return moveHunter(p, getCardinalDirection([cardinalDirection[0], 0]), walls, depth - 1, original1, cardinalDirection[1]);
+          return moveHunter(p, getCardinalDirection([cardinalDirection[0] * -1, 0]), walls, depth - 1, cardinalDirection[0], original2 );
+        } else  {
+          return moveHunter(p, getCardinalDirection([cardinalDirection[0], cardinalDirection[1] * -1]), walls, depth - 1, original1, cardinalDirection[1]);
         }
       }
       if (w.direction === cardinalDirections.N || w.direction === cardinalDirections.S) {
         if (cardinalDirection === cardinalDirections.N || cardinalDirection === cardinalDirections.S) {
-          return moveHunter(p, getCardinalDirection(0, [cardinalDirection[0] * -1]), walls, depth - 1, original1 * -1, cardinalDirection[1]);
+          return moveHunter(p, getCardinalDirection([0, cardinalDirection[1] * -1]), walls, depth - 1, original1 , cardinalDirection[1]);
         } else {
-          return moveHunter(p, getCardinalDirection([0, cardinalDirection[1]]), walls, depth - 1, cardinalDirection[0], original2);
+          return moveHunter(p, getCardinalDirection([cardinalDirection[0] *-1, cardinalDirection[1]]), walls, depth - 1, cardinalDirection[0], original2 );
         }
       }
     } else {
@@ -381,10 +380,16 @@ useCoords = function(wall) {
   y1 = wall.position[1];
   x2 = wall.position[0];
   y2 = wall.position[1];
-  if (wall.direction === cardinalDirections.E || wall.direction === cardinalDirections.W) {
+  if (wall.direction === cardinalDirections.E) {
     x2 = x1 + wall.length;
   }
-  if (wall.direction === cardinalDirections.N || wall.direction === cardinalDirections.S) {
+  if (wall.direction === cardinalDirections.W) {
+    x2 = x1 - wall.length;
+  }
+  if (wall.direction === cardinalDirections.N ) {
+    y2 = y1 - wall.length;
+  }
+  if (wall.direction === cardinalDirections.S) {
     y2 = y1 + wall.length;
   }
   return [x1, y1, x2, y2];
@@ -416,11 +421,11 @@ isWallIntersecting = function(newWall, walls) {
 };
 
 isWallIntersectingHunter = function(newWall, hunterPosition) {
-  return compareToPoint(newWall, hunterPosition);
+  return isPointOnWall(hunterPosition,newWall);
 };
 
 isWallIntersectingPrey = function(newWall, preyPosition) {
-  return compareToPoint(newWall, preyPosition);
+  return isPointOnWall(preyPosition, newWall);
 };
 
 isSquished = function(hunterPos, hunterDir, walls) {
