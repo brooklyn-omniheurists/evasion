@@ -143,7 +143,7 @@ function processHunter(data) {
         parsedWall.position = move(hunterPos,properDirection);
         parsedWall.direction = properDirection;
         //console.log("POSITION: " + data.wall.position);
-        var valid =  isValidWall(data.wall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos);
+        var valid =  isValidWall(parsedWall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos);
         if (valid) {
             walls.push(parsedWall);
         }
