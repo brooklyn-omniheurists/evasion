@@ -4,17 +4,17 @@
 __Produces__
 ```javascript
  {
-    hunter: [0,0],
-    prey: [230,200],
-    wall: [
+    "hunter": [0,0],
+    "prey": [230,200],
+    "wall": [
            { 
              "length" : 4,
              "position": [1,0],
              "direction":"E"
            }, ...
           ],
-    time: INTEGER_VALUE,
-    gameover: false
+    "time": INTEGER_VALUE,
+    "gameover": false
 }
 ```
 
@@ -23,10 +23,10 @@ __Produces__
 __Consumes__
 ```javascript
  {
-   command:'B',
-   wall: {
-     length: INTEGER_VALUE,
-     direction: <i.e. cardinalDirections.N>
+   "command":"B",
+   "wall": {
+     "length": 10,
+     "direction": "N"
    }
   }
 ```
@@ -34,15 +34,15 @@ __Consumes__
 __Consumes__
 ```javascript
 {
-    command: 'D',
-    wallIndex: <int>
-  }
+    "command": "D",
+    "wallIndex": 4
+ }
 ```
 ### Moving w/o Building or Deleting Walls
 __Consumes__
 ```javascript
   {
-    command:'M'
+    "command":"M"
   }
 ```
 
@@ -51,23 +51,24 @@ __Consumes__
 __Consumes__
 ```javascript
 {
-  command: 'M',
-  direction: <i.e cardinalDirections.N>
+  "command": "M",
+  "direction": "NE"
 }
+```
 ### Not Moving
 __Consumes__
 ```javascript
 {
-  command: 'M'
+  "command": "M"
 }
 ```
-##Both Hunter's and Prey's Port
+## Both Hunter's and Prey's Port
 
 ### Get Positions of Hunter and Prey
 __Consumes__
 ```javascript
 {
-  command: "P"
+  "command": "P"
 }
 ```
 __Produces__
@@ -82,7 +83,7 @@ __Produces__
 __Consumes__
 ```javascript
 {
-  command: "W"
+  "command": "W"
 }
 ```
 __Produces__
