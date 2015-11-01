@@ -1,6 +1,7 @@
 # Application interface
 ## ws:localhost:1991 (Hunter's Port)
-Building walls
+### Building walls
+__Consumes__
 ```javascript
  {
    command:'B',
@@ -10,14 +11,16 @@ Building walls
    }
   }
 ```
-Deleting walls
+### Deleting walls
+__Consumes__
 ```javascript
 {
     command: 'D',
     wallIndex: <int>
   }
 ```
-Just moving
+### Moving w/o Building or Deleting Walls
+__Consumes__
 ```javascript
   {
     command:'M'
@@ -25,23 +28,54 @@ Just moving
 ```
 
 ## ws:localhost:1992 (Prey's Port)
+### Moving
+__Consumes__
 ```javascript
 {
   command: 'M',
   direction: <i.e cardinalDirections.N>
 }
+### Not Moving
+__Consumes__
+```javascript
+{
+  command: 'M'
+}
 ```
-##Both players can pass the following:
+##Both Hunter's and Prey's Port
 
-Get Positions of Hunter and Prey
+### Get Positions of Hunter and Prey
+__Consumes__
 ```javascript
 {
   command: "P"
 }
 ```
+__Produces__
+```javascript
+{
+  "command" : "P",
+  "hunter" : [0,0],
+  "prey": [230,200]
+}
+```
 Get Walls
+__Consumes__
 ```javascript
 {
   command: "W"
+}
+```
+__Produces__
+```javascript
+{
+  "command" : "W",
+  "walls" : [ 
+     { 
+       "length" : 4,
+       "position": [1,0],
+       "direction":"E"
+     } 
+  ]
 }
 ```
