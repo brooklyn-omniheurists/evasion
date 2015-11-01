@@ -175,14 +175,9 @@ function processPrey(data) {
     console.log("processPrey");
     var properDirection = cardinalDirections.N;
     if (data.command == 'M') {
-        if (data.direction == null) {
-            data.direction = [0,0];
-        }
-
         properDirection = getProperDirection(data.direction);
-     
-        preyPos = movePrey(preyPos,properDirection,walls.concat(globalWalls));
-
+        if(properDirection != null)
+          preyPos = movePrey(preyPos,properDirection,walls.concat(globalWalls));
     }
 }
 
