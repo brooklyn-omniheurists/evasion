@@ -104,6 +104,22 @@ var hunterPos = [0,0];
 var preyPos = [230,200];
 var hunterDir = cardinalDirections.SE;
 
+function stringFromValue(val){
+  for(k in cardinalDirections){
+    if(cardinalDirections[k] === val)
+      return k;
+  }
+  return val;
+}
+
+function properWallOutput(walls){
+  var clone = walls.slice(0);
+  for(var i = 0; i < clone.length; i++){
+    clone[i].direction = stringFromValue(clone[i].direction);
+  }
+  return clone;
+}
+
 function process(data, connection) {
     console.log("process");
     if (data.command == 'P') {
@@ -117,7 +133,7 @@ function process(data, connection) {
         connection.send(JSON.stringify(
                             {
                                 command: data.command,
-                                walls: walls
+                                walls: properOutput(walls)
                             }));
     }
 }
@@ -217,7 +233,7 @@ function sendMove(nextMove) {
         }
     }
     else if (time%2 == 1) {
-        //console.log("Odd Time: " + time);   
+        //console.log("Odd Time: " + time);
         if (hMoves.length != 0 && pMoves.length != 0) {
             hNextMove = hMoves[0];
             pNextMove = pMoves[0];
@@ -351,7 +367,7 @@ function RotationDirection(p1x, p1y, p2x, p2y, p3x, p3y) {
     return 1;
   else if (((p3y - p1y) * (p2x - p1x)) == ((p2y - p1y) * (p3x - p1x)))
     return 0;
-  
+
   return -1;
 }
 
@@ -364,10 +380,10 @@ line_intersects = function(x1, y1, x2, y2, x3, y3, x4, y4) {
   var face3CounterClockwise = RotationDirection(x1, y1, x3, y3, x4, y4);
   var face4CounterClockwise = RotationDirection(x2, y2, x3, y3, x4, y4);
 
-  // If face 1 and face 2 rotate different directions and face 3 and face 4 rotate different directions, 
+  // If face 1 and face 2 rotate different directions and face 3 and face 4 rotate different directions,
   // then the lines intersect.
   var intersect = face1CounterClockwise != face2CounterClockwise && face3CounterClockwise != face4CounterClockwise;
-  
+
   // If lines are on top of each other.
   if (face1CounterClockwise == 0 && face2CounterClockwise == 0 && face3CounterClockwise == 0 && face4CounterClockwise == 0){
     intersect = true;}
