@@ -15,7 +15,11 @@ var preySocket = new server({
 var connection1 = null;
 var connection2 = null;
 var connection3 = null;
+var MAX_WALLS = 5;
+var COOL_DOWN_TIME = 2;
 var time = 0;
+var timeSinceLastBuild = -100;
+var errorList = [];
 
 var Wall, isPointOnWall, isWallIntersecting, line_intersects, move, moveHunter, movePrey, startPoint, useCoords, useLines, wall1, wall2;
 var RotationDirection, buildWallCoolingDown, canDeleteWall, cardinalDirections, compareToPoint, getCardinalDirection, hasHunterWon, isSquished, isWallIntersectingHunter, isWallIntersectingPrey, numWallsIsMaxed, willWallCauseSquishing, isValidWall;
@@ -30,6 +34,16 @@ Wall = (function() {
     return Wall;
 
   })();
+
+Error = (function() {
+  function Error(message, reason, data) {
+    this.message = message;
+    this.reason = reason;
+    this.data = data;
+  }
+
+  return Error;
+})();
 
 
 var cardinalDirections = {
@@ -100,7 +114,7 @@ preySocket.on('request', function(request) {
     });
 });
 
-var hunterPos = [0,0];
+var hunterPos = [295,295];
 var preyPos = [230,200];
 var hunterDir = cardinalDirections.SE;
 
@@ -159,9 +173,19 @@ function processHunter(data) {
         parsedWall.position = move(hunterPos,properDirection);
         parsedWall.direction = properDirection;
         //console.log("POSITION: " + data.wall.position);
-        var valid =  isValidWall(parsedWall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos);
+        var valid =  isValidWall(parsedWall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos, data);
         if (valid) {
+          var error;
+          if(buildWallCoolingDown(time, timeSinceLastBuild, COOL_DOWN_TIME)) {
+            error = new Error("Wall could not be built.", "Not enough time has elapsed since last build", data);
+            errorList.push(error);
+          } else if(numWallsIsMaxed(MAX_WALLS,walls)){
+            error = new Error("Wall could not be built.", "You've built too many walls brother. Time to start thinking about tearing them down.", data);
+            errorList.push(error);
+          } else {
             walls.push(parsedWall);
+            timeSinceLastBuild = time;
+          }
         }
         validCommand = true;
     }
@@ -215,6 +239,7 @@ function sendMove(nextMove) {
     }
     //moves.push(nextMove);
     //console.log(moves);
+    var broadcast = broadcastJson();
     if (time%2 == 0) {
         //console.log("Even Time: " + time);
         if (hMoves.length != 0) {
@@ -222,14 +247,7 @@ function sendMove(nextMove) {
             hMoves.splice(0,1);
             hNextMove.fun(hNextMove.data);
             time++;
-             connection1.send(JSON.stringify({
-                        hunter: hunterPos,
-                        prey: preyPos,
-                        wall: walls,
-                        time: time,
-                        gameover: hasHunterWon(hunterPos, preyPos, walls)
-
-                    }));
+             connection1.send(broadcast);
         }
     }
     else if (time%2 == 1) {
@@ -243,18 +261,24 @@ function sendMove(nextMove) {
             pMoves.splice(0,1);
             time++;
             //console.log("LOOK HERE: " + preyPos);
-             connection1.send(JSON.stringify({
-                        hunter: hunterPos,
-                        prey: preyPos,
-                        wall: walls,
-                        time: time,
-                        gameover: hasHunterWon(hunterPos, preyPos, walls)
-                    }));
+             connection1.send(broadcast);
         }
     }
+    console.log(broadcast);
         //console.log(moves);
 
 
+}
+
+function broadcastJson(){
+  var json = {};
+  json.hunter = hunterPos;
+  json.walls = walls;
+  json.time = time;
+  json.gameover = hasHunterWon(hunterPos, preyPos, walls);
+  json.errors = errorList;
+  errorList = [];
+  return JSON.stringify(json);
 }
 
 
@@ -485,19 +509,32 @@ buildWallCoolingDown = function(timenow, timesincelast, waittime) {
   return timenow - timesincelast < waittime;
 };
 
-isValidWall = function(newWall, walls, hunterPos, hunterDir, preyPos) {
+isValidWall = function(newWall, walls, hunterPos, hunterDir, preyPos, data) {
+  if(data == null){
+    data = "";
+  }
+  var error;
   var intersecthunter, intersectprey, intersectwall, squishing;
   intersectwall = isWallIntersecting(newWall, walls);
-   // console.log("MAYBE1: " + intersectwall);
+  if(intersectwall){
+    error = new Error("Wall could not be built", "This wall intersects another wall", data);
+    errorList.push(error);
+  }
   intersecthunter = isWallIntersectingHunter(newWall, hunterPos);
-   //     console.log("MAYBE2: " + intersecthunter);
-
+  if(intersecthunter){
+    error = new Error("Wall could not be built", "This wall intersects the hunter", data);
+    errorList.push(error);
+  }
   intersectprey = isWallIntersectingPrey(newWall, preyPos);
-  //      console.log("MAYBE3: " + intersectprey);
-
+  if(intersectprey){
+    error = new Error("Wall could not be built", "This wall intersects the prey", data);
+    errorList.push(error);
+  }
   squishing = willWallCauseSquishing(newWall, walls, hunterPos, hunterDir);
-   //       console.log("MAYBE4: " + squishing);
-
+  if(squishing){
+    error = new Error("Wall could not be built", "This wall causes squishing", data);
+    errorList.push(error);
+  }
     return !(intersectwall || intersecthunter || intersectprey || squishing);
 };
 
