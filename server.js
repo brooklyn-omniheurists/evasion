@@ -1,5 +1,12 @@
 var server = require('websocket').server, http = require('http');
 
+var express = require('express'),
+app = express();
+app.set('view engine', 'html');
+app.use(express.static(__dirname));
+
+var webServer = app.listen(8080);
+
 var socket = new server({
     httpServer: http.createServer().listen(1990)
 });
