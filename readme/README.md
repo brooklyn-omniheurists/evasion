@@ -27,6 +27,7 @@ __Diagonal walls are not supported.__
 An illustration of building walls:
 
 A hunter builds a southward wall and moves southeast
+
 ![hunter-builds-wall-south1](images/hunter-builds-wall-south1.png)
 
 ![hunter-builds-wall-south2](images/hunter-builds-wall-south2.png)
