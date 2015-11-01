@@ -133,7 +133,7 @@ function process(data, connection) {
         connection.send(JSON.stringify(
                             {
                                 command: data.command,
-                                walls: properOutput(walls)
+                                walls: properWallOutput(walls)
                             }));
     }
 }
