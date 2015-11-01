@@ -21,6 +21,10 @@ public class App
 	private static CountDownLatch messageLatch;
 	
 	private static String SENT_MESSAGE = "";
+	
+	private static String publisherEndpoint = "ws://localhost:1990",
+				   		  hunterEndpoint = "ws://localhost:1991",
+				   		  preyEndpoint = "ws://localhost:1992";
 	    
     public static void main( String[] args )
     {        
@@ -30,7 +34,8 @@ public class App
             final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
 
             ClientManager client = ClientManager.createClient();
-            client.connectToServer(new Endpoint() {
+            
+            Endpoint hunter = new Endpoint() {
 
 				@Override
 				public void onOpen(Session session, EndpointConfig arg1) {
@@ -43,23 +48,35 @@ public class App
                         });
                         SENT_MESSAGE = getPositionsCommand();
                         session.getBasicRemote().sendText(SENT_MESSAGE);
+                        SENT_MESSAGE = getWallsCommand();
+                        session.getBasicRemote().sendText(SENT_MESSAGE);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 					
 				}
-            }, cec, new URI("ws://localhost:1991"));
+            };
+            client.connectToServer(hunter, cec, new URI(hunterEndpoint));
             messageLatch.await(100, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
         
     public static String getPositionsCommand() {
+    	return runCommand("P");
+    }
+    
+    public static String getWallsCommand() {
+    	return runCommand("W");
+    }
+    
+    public static String runCommand(String command) {
     	String action = "";
     	ObjectMapper mapper = new ObjectMapper();
     	ObjectNode node = mapper.createObjectNode();
-        node.put("command", "P"); 
+        node.put("command", command); 
         try {
 			action = mapper.writeValueAsString(node);
 		} catch (JsonProcessingException e) {
