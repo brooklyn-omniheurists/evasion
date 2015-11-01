@@ -35,19 +35,28 @@ Wall = (function() {
 
   })();
 
+
 var errorCodes = {
-      1: "This wall intersects another wall",
-      2: "This wall intersects the hunter",
-      3: "This wall intersects the prey",
-      4: "This wall causes squishing",
-      5: "Not enough time has elapsed since last build",
-      6: "You've built too many walls brother. Time to start thinking about tearing them down."
+      I_WALL: 0,
+      I_HUNT: 1,
+      I_PREY: 2,
+      SQUISH: 3,
+      WAIT_TIME: 4,
+      TOO_MANY_WALLS: 5
   };
+var errorCodesMessages = ["This wall intersects another wall",
+                  "This wall intersects the hunter",
+                  "This wall intersects the prey",
+                  "This wall causes squishing",
+                  "Not enough time has elapsed since last build",
+                  "You've built too many walls brother. Time to start thinking about tearing them down."
+                  ];
 
 Error = (function() {
-  function Error(message, reason, data) {
+  function Error(message, code, data) {
     this.message = message;
-    this.reason = reason;
+    this.code = code;
+    this.reason = errorCodesMessages[code];
     this.data = data;
   }
 
@@ -186,10 +195,10 @@ function processHunter(data) {
         if (valid) {
           var error;
           if(buildWallCoolingDown(time, timeSinceLastBuild, COOL_DOWN_TIME)) {
-            error = new Error("Wall could not be built.", errorCodes.5, data);
+            error = new Error("Wall could not be built.", errorCodes.WAIT_TIME, data);
             errorList.push(error);
           } else if(numWallsIsMaxed(MAX_WALLS,walls)){
-            error = new Error("Wall could not be built.", "You've built too many walls brother. Time to start thinking about tearing them down.", data);
+            error = new Error("Wall could not be built.", errorCodes.TOO_MANY_WALLS, data);
             errorList.push(error);
           } else {
             walls.push(parsedWall);
@@ -273,7 +282,6 @@ function sendMove(nextMove) {
              connection1.send(broadcast);
         }
     }
-    console.log(broadcast);
         //console.log(moves);
 
 
@@ -550,22 +558,22 @@ isValidWall = function(newWall, walls, hunterPos, hunterDir, preyPos, data) {
   var intersecthunter, intersectprey, intersectwall, squishing;
   intersectwall = isWallIntersecting(newWall, walls);
   if(intersectwall){
-    error = new Error("Wall could not be built", "This wall intersects another wall", data);
+    error = new Error("Wall could not be built", errorCodes.I_WALL, data);
     errorList.push(error);
   }
   intersecthunter = isWallIntersectingHunter(newWall, hunterPos);
   if(intersecthunter){
-    error = new Error("Wall could not be built", "This wall intersects the hunter", data);
+    error = new Error("Wall could not be built", errorCodes.I_HUNT, data);
     errorList.push(error);
   }
   intersectprey = isWallIntersectingPrey(newWall, preyPos);
   if(intersectprey){
-    error = new Error("Wall could not be built", "This wall intersects the prey", data);
+    error = new Error("Wall could not be built", errorCodes.I_PREY, data);
     errorList.push(error);
   }
   squishing = willWallCauseSquishing(newWall, walls, hunterPos, hunterDir);
   if(squishing){
-    error = new Error("Wall could not be built", "This wall causes squishing", data);
+    error = new Error("Wall could not be built", errorCodes.SQUISH, data);
     errorList.push(error);
   }
     return !(intersectwall || intersecthunter || intersectprey || squishing);
