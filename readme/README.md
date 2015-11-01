@@ -18,15 +18,22 @@ The prey moves once every other turn, and can move in any given direction, but o
 
 Walls are centered about points on an `(x,y)` coordinate plane. they have a thickness of .5 and are always of integer length.
 
-A hunter can only build a wall every N step, and have a maximum of M walls at any given moment. The hunter can always delete a wall whenever it wants however.
+A hunter can only build a wall every _N_ step, and have a maximum of _M_ walls at any given moment. The hunter can always delete a wall whenever it wants however.
 
-When a hunter builds a wall, it builds the wall at a point that touches the hunter, but not at the hunter. For example, a hunter at point `(10,10)` builds a wall that goes `SOUTH` of him, the wall starts at point `(10,11)` and moves southward. The same works for `NORTH`, `EAST`, and `WEST`, each one moving over one unit in the given direction.
+When a hunter builds a wall, it builds the wall at a point that touches the hunter, from the point of the hunter. For example, a hunter at point `(10,10)` builds a wall that goes `SOUTH` of him, the wall starts at point `(10,10)` and moves southward. The same works for `NORTH`, `EAST`, and `WEST`.
 
 __Diagonal walls are not supported.__
 
+An illustration of building walls:
 
-An illustration:
-A hunter builds an eastward and a southward wall, then moves southeast with no problem.
+A hunter builds a southward wall and moves southeast
+![hunter-builds-wall-south1](images/hunter-builds-wall-south1.png)
+
+![hunter-builds-wall-south2](images/hunter-builds-wall-south2.png)
+
+
+An illustration of corner movement:
+A hunter moves southeast on a southward and eastward walls.
 
 ![hunter-moving-southeast1](images/hunter-moving-southeast1.png)
 
