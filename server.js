@@ -137,11 +137,15 @@ function processHunter(data) {
         properDirection = getProperDirection(data.wall.direction);
         //console.log(properDirection);
         //console.log(properDirection);
-        data.wall.position = move(hunterPos,properDirection);
+        // data.wall.position = move(hunterPos,properDirection);
+        var parsedWall = {};
+        parsedWall.length = data.wall.length;
+        parsedWall.position = move(hunterPos,properDirection);
+        parsedWall.direction = properDirection;
         //console.log("POSITION: " + data.wall.position);
         var valid =  isValidWall(data.wall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos);
         if (valid) {
-            walls.push(data.wall);
+            walls.push(parsedWall);
         }
         validCommand = true;
     }
