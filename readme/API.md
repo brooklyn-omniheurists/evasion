@@ -4,8 +4,8 @@
 __Produces__
 ```javascript
  {
-    "hunter": [0,0],
-    "prey": [230,200],
+    "hunter": [1,1],
+    "prey": [231,200],
     "wall": [
            { 
              "length" : 4,
@@ -13,7 +13,7 @@ __Produces__
              "direction":"E"
            }, ...
           ],
-    "time": INTEGER_VALUE,
+    "time": 1,
     "gameover": false
 }
 ```
