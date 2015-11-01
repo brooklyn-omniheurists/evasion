@@ -297,6 +297,7 @@ function sendMove(nextMove) {
 function broadcastJson(){
   var json = {};
   json.hunter = hunterPos;
+  json.prey = preyPos;
   json.walls = properWallOutput(walls);
   json.time = time;
   json.gameover = hasHunterWon(hunterPos, preyPos, walls);
