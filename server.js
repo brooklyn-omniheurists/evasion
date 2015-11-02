@@ -58,7 +58,8 @@ var errorCodesMessages = ["This wall intersects another wall",
                   "This wall intersects the prey",
                   "This wall causes squishing",
                   "Not enough time has elapsed since last build",
-                  "You've built too many walls brother. Time to start thinking about tearing them down."
+                  "You've built too many walls brother. Time to start thinking about tearing them down.",
+		  "These wall ids do not exist."
                   ];
 
 EvasionError = (function() {
@@ -218,7 +219,7 @@ function processHunter(data) {
     else if (data.command == 'D') {
 	failDels = [];
 	data.wallIds.forEach(deleteWallsById);
-        error = new EvasionError("Walls " + failDels + " do not exist", errorCodes.DELETE_FAILED, data);
+        var error = new EvasionError("Walls " + failDels + " do not exist", errorCodes.DELETE_FAILED, data);
 	errorList.push(error);
         validCommand = true;
     }
