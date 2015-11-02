@@ -150,7 +150,7 @@ function stringFromValue(val){
 }
 
 function properWallOutput(walls){
-  var clone = walls.slice(0);
+  var clone = JSON.parse(JSON.stringify(walls));
   for(var i = 0; i < clone.length; i++){
     clone[i].direction = stringFromValue(clone[i].direction);
   }
