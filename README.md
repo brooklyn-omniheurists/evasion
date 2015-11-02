@@ -18,12 +18,13 @@ Thus both `Player 1` and `Player 2` connect to two websockets each, the publishe
 
 Files:
   
-  * server.js: node js file with all game logic
+  * server.js: node js file with all game logic, hosts ui at localhost:8080/evasion-ui/app/
   * test.html : sample html5 + javascript websockets client
 
 Folders:
   * evasion (dir) : eclipse maven project containing sample java websockets client
   * readme (dir) : documentation on bouncing rules, etc.
+  * evasion-ui: angularjs project using raphael for drawing
 
 ## Instructions:
 
