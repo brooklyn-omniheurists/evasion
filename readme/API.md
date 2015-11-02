@@ -53,12 +53,12 @@ __Consumes__
    }
   }
 ```
-### Deleting walls
+### Deleting walls (multiple walls now possible)
 __Consumes__
 ```json
 {
     "command": "D",
-    "wallIndex": 4
+    "wallIds": [2,5]
  }
 ```
 ### Moving w/o Building or Deleting Walls
