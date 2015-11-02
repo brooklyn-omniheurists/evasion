@@ -59,7 +59,7 @@
                         {
                             command:'B',
                             wall: { 
-                                    length: 2,
+                                    length: 50,
                                     direction: 'S'
                                   }
                         }));
@@ -69,8 +69,9 @@
         socketH.send(JSON.stringify(
                         {
                             command:'D',
-                            wallIndex: 0
+                            wallIds:[0,1]
                         }));
+        socketH.send(JSON.stringify({command:'M'}));
         // Prey asks for walls
         socketP.send(JSON.stringify({command:'W'}));
         //

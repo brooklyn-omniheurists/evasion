@@ -1,0 +1,79 @@
+/* app css stylesheet */
+
+.menu {
+  list-style: none;
+  border-bottom: 0.1em solid black;
+  margin-bottom: 2em;
+  padding: 0 0 0.5em;
+}
+
+.menu:before {
+  content: "[";
+}
+
+.menu:after {
+  content: "]";
+}
+
+.menu > li {
+  display: inline;
+}
+
+.menu > li:before {
+  content: "|";
+  padding-right: 0.3em;
+}
+
+.menu > li:nth-child(1):before {
+  content: "";
+  padding: 0;
+}
+
+H1 {
+    padding: 5px;
+    font-size: 14pt;
+    font-style: italic;
+}
+BODY {
+    font-family: arial;
+    font-size: 10pt;
+}
+#holder {
+    position: relative;
+    width: 400px;
+    height:300px;
+    top: 10px;
+    left: 220px;
+    border: 2px solid #333;
+}
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+}
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 300px;
+    background-image: url(overlay.gif);
+}
+#map, #underMap {
+    top: 50px;
+    left: 20px;
+    position: absolute;
+}
+#copyright {
+    position: absolute;
+    top: 270px;
+    left: 15px;
+}
+A {
+    color: #66AACC;
+}
+A:hover {
+    color: lime;
+}
+
