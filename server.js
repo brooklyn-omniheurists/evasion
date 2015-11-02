@@ -108,6 +108,7 @@ socket.on('request', function(request) {
         hunterMoves = [];
         preysMoves = [];
         errors = [];
+        timeSinceLastBuild = -100;
     });
 });
 

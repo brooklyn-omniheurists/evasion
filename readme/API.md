@@ -2,26 +2,48 @@
 ## ws:localhost:1990 (Publisher's Port)
 ### Publishes Turn Results
 __Produces__
-```javascript
+```json
  {
     "hunter": [1,1],
     "prey": [231,200],
-    "wall": [
-           { 
+    "walls": [
+           {
              "length" : 4,
              "position": [1,0],
              "direction":"E"
            }, ...
           ],
     "time": 1,
-    "gameover": false
+    "gameover": false,
+    "errors": [
+      {
+        "message" : "Wall could not be built",
+        "code": 0,
+        "reason" : "This wall intersects another wall",
+        "data": {
+          "command" : "B",
+          "direction" : "N"
+        }
+      }...
+    ]
 }
+```
+
+__Both walls and errors can be empty__. The Errors object has a list of codes and it's meaningful reasons. The codes are provided for debugging sake.
+
+```javascript
+errorCodes[0] = "This wall intersects another wall";
+errorCodes[1] = "This wall intersects the hunter";
+errorCodes[2] = "This wall intersects the prey";
+errorCodes[3] = "This wall causes squishing";
+errorCodes[4] = "Not enough time has elapsed since last build";
+errorCodes[5] = "You've built too many walls brother. Time to start thinking about tearing them down.";
 ```
 
 ## ws:localhost:1991 (Hunter's Port)
 ### Building walls
 __Consumes__
-```javascript
+```json
  {
    "command":"B",
    "wall": {
@@ -32,7 +54,7 @@ __Consumes__
 ```
 ### Deleting walls
 __Consumes__
-```javascript
+```json
 {
     "command": "D",
     "wallIndex": 4
@@ -49,7 +71,7 @@ __Consumes__
 ## ws:localhost:1992 (Prey's Port)
 ### Moving
 __Consumes__
-```javascript
+```json
 {
   "command": "M",
   "direction": "NE"
@@ -57,7 +79,7 @@ __Consumes__
 ```
 ### Not Moving
 __Consumes__
-```javascript
+```json
 {
   "command": "M"
 }
@@ -66,13 +88,13 @@ __Consumes__
 
 ### Get Positions of Hunter and Prey
 __Consumes__
-```javascript
+```json
 {
   "command": "P"
 }
 ```
 __Produces__
-```javascript
+```json
 {
   "command" : "P",
   "hunter" : [0,0],
@@ -81,21 +103,21 @@ __Produces__
 ```
 ### Get Walls
 __Consumes__
-```javascript
+```json
 {
   "command": "W"
 }
 ```
 __Produces__
-```javascript
+```json
 {
   "command" : "W",
-  "walls" : [ 
-     { 
+  "walls" : [
+     {
        "length" : 4,
        "position": [1,0],
        "direction":"E"
-     } 
+     }
   ]
 }
 ```
