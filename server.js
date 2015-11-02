@@ -92,26 +92,16 @@ var topWall = new Wall([0, -1], 300, cardinalDirections.E);
 var bottomWall = new Wall([0, 301], 300, cardinalDirections.E);
 var globalWalls = [leftWall, rightWall, topWall, bottomWall];
 
+var connectionArray = [];
 
+function publish (data) {
+  for (var i = 0; i < connectionArray.length; i++) {
+    connectionArray[i].send(data);
+  }
+}
 
 socket.on('request', function(request) {
-    connection1 = request.accept(null, request.origin);
-
-    connection1.on('message', function(message) {
-        console.log("main socket");
-    });
-
-    connection1.on('close', function(connection) {
-        console.log('connection closed');
-        time = 0;
-        preyPos = [230,200];
-        hunterPos = [0,0];
-        walls = [];
-        hunterMoves = [];
-        preysMoves = [];
-        errors = [];
-        timeSinceLastBuild = -100;
-    });
+    connectionArray.push(request.accept(null, request.origin));
 });
 
 hunterSocket.on('request', function(request) {
@@ -301,7 +291,7 @@ function sendMove(nextMove) {
             hNextMove.fun(hNextMove.data);
             time++;
             broadcast = broadcastJson();
-            connection1.send(broadcast);
+            publish(broadcast);
         }
     }
     else if (time%2 == 1) {
@@ -314,8 +304,8 @@ function sendMove(nextMove) {
             hMoves.splice(0,1);
             pMoves.splice(0,1);
             time++;
-            broadcast = broadcastJson()
-            connection1.send(broadcast);
+            broadcast = broadcastJson();
+            publish(broadcast);
         }
     }
 }
