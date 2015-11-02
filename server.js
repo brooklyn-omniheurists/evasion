@@ -257,7 +257,7 @@ function sendMove(nextMove) {
     }
     //moves.push(nextMove);
     //console.log(moves);
-    var broadcast = broadcastJson();
+    var broadcast;
     if (time%2 == 0) {
         //console.log("Even Time: " + time);
         if (hMoves.length != 0) {
@@ -265,7 +265,8 @@ function sendMove(nextMove) {
             hMoves.splice(0,1);
             hNextMove.fun(hNextMove.data);
             time++;
-             connection1.send(broadcast);
+            broadcast = broadcastJson();
+            connection1.send(broadcast);
         }
     }
     else if (time%2 == 1) {
@@ -278,13 +279,10 @@ function sendMove(nextMove) {
             hMoves.splice(0,1);
             pMoves.splice(0,1);
             time++;
-            //console.log("LOOK HERE: " + preyPos);
-             connection1.send(broadcast);
+            broadcast = broadcastJson()
+            connection1.send(broadcast);
         }
     }
-        //console.log(moves);
-
-
 }
 
 function broadcastJson(){
