@@ -5,7 +5,7 @@ require 'json'
 def do_something
   [{ command: "B" , wall: { length: Random.rand(300)+1, direction: ['E','N','W','S'].sample}  },
    { command: "M"},
-   { command: "D", index: Random.rand(5)+1 }].sample
+   { command: "D", wallIds: [Random.rand(5)+1] }].sample
 end
 
 hunterSocket = WebSocket::Client::Simple.connect 'ws://localhost:1991'
