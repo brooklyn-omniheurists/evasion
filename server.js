@@ -26,6 +26,7 @@ var MAX_WALLS = 5;
 var COOL_DOWN_TIME = 2;
 var time = 0;
 var timeSinceLastBuild = -100;
+var lastWallId = 0;
 var errorList = [];
 
 var Wall, isPointOnWall, isWallIntersecting, line_intersects, move, moveHunter, movePrey, startPoint, useCoords, useLines, wall1, wall2;
@@ -49,7 +50,8 @@ var errorCodes = {
       I_PREY: 2,
       SQUISH: 3,
       WAIT_TIME: 4,
-      TOO_MANY_WALLS: 5
+      TOO_MANY_WALLS: 5,
+      DELETE_FAILED: 6
   };
 var errorCodesMessages = ["This wall intersects another wall",
                   "This wall intersects the hunter",
@@ -185,6 +187,7 @@ function getProperDirection(direction){
   return cardinalDirections[direction];
 }
 
+var failDels = [];
 function processHunter(data) {
         //{command:'B',wall: { length:<int>,direction:<cardinalDirections enum> }
         //{command:'D',wallIndex:<int>}
@@ -202,8 +205,9 @@ function processHunter(data) {
         parsedWall.length = data.wall.length;
         parsedWall.position = hunterPos;
         parsedWall.direction = properDirection;
+
         //console.log("POSITION: " + data.wall.position);
-        var valid =  isValidWall(parsedWall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos, data);
+        var valid = isValidWall(parsedWall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos, data);
         if (valid) {
           var error;
           if(buildWallCoolingDown(time, timeSinceLastBuild, COOL_DOWN_TIME)) {
@@ -213,19 +217,19 @@ function processHunter(data) {
             error = new EvasionError("Wall could not be built.", errorCodes.TOO_MANY_WALLS, data);
             errorList.push(error);
           } else {
+	    parsedWall.id = lastWallId;
             walls.push(parsedWall);
             timeSinceLastBuild = time;
+	    lastWallId++;
           }
         }
         validCommand = true;
     }
     else if (data.command == 'D') {
-        // check if valid deletion
-        var valid = canDeleteWall(data.wallIndex,walls);
-        //console.log("LOOK HERE" + valid);
-        if (valid) {
-            walls.splice(data.wallIndex);
-        }
+	failDels = [];
+	data.wallIds.forEach(deleteWallsById);
+        error = new EvasionError("Walls " + failDels + " do not exist", errorCodes.DELETE_FAILED, data);
+	errorList.push(error);
         validCommand = true;
     }
     else if (data.command == 'M') {
@@ -236,6 +240,25 @@ function processHunter(data) {
         hunterPos = hunter.newPosition;
         hunterDir = hunter.direction;
     }
+}
+
+
+function deleteWallsById(currentValue) {
+	var found = false;
+	for (var i = 0; i < walls.length; i++) {
+		if (wallEquals(currentValue,walls[i])) {
+			walls.splice(i,1);
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		failDels.push(currentValue);
+	}
+}
+
+function wallEquals(id, wall) {
+	return id == wall.id;
 }
 
 function processPrey(data) {
@@ -549,9 +572,6 @@ hasHunterWon = function(hunterPos, preyPos, walls) {
   return closeEnough;
 };
 
-canDeleteWall = function(index, walls) {
-  return index >= 0 && index < walls.length;
-};
 
 numWallsIsMaxed = function(num, walls) {
   return num === walls.length;
@@ -589,6 +609,28 @@ isValidWall = function(newWall, walls, hunterPos, hunterDir, preyPos, data) {
   }
     return !(intersectwall || intersecthunter || intersectprey || squishing);
 };
+
+/*
+processHunter({command:"B",wall:{length:2,direction:"S"}});
+console.log(walls);
+processHunter({command:"D",wallIds:[0]});
+console.log(failDels);
+console.log(walls);
+processHunter({command:"D",wallIds:[0]});
+console.log(failDels);
+buildFakeWalls(5, 10);
+processHunter({command:"D",wallIds:[2,4]});
+console.log(walls);
+buildFakeWalls(2, 60);
+console.log(walls);
+
+function buildFakeWalls(numWalls, seed) {
+	for (var i = 0; i <= numWalls; i++) {
+		hunterPos = [seed*i,seed*i];
+		time = seed*i;
+		processHunter({command:"B",wall:{length:i,direction:"S"}});
+	}
+}*/
 
 /*processHunter({command:'B',wall: { position:[2,2], length:2, direction:cardinalDirections.S } });
 console.log(walls);
