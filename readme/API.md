@@ -38,6 +38,7 @@ errorCodes[2] = "This wall intersects the prey";
 errorCodes[3] = "This wall causes squishing";
 errorCodes[4] = "Not enough time has elapsed since last build";
 errorCodes[5] = "You've built too many walls brother. Time to start thinking about tearing them down.";
+errorCodes[6] = "These wall ids do not exist and therefore could not be deleted";
 ```
 
 ## ws:localhost:1991 (Hunter's Port)
@@ -52,12 +53,12 @@ __Consumes__
    }
   }
 ```
-### Deleting walls
+### Deleting walls (multiple walls now possible)
 __Consumes__
 ```json
 {
     "command": "D",
-    "wallIndex": 4
+    "wallIds": [2,5]
  }
 ```
 ### Moving w/o Building or Deleting Walls
