@@ -95,8 +95,12 @@ socket.on('request', function(request) {
     connection1.on('close', function(connection) {
         console.log('connection closed');
         time = 0;
+        preyPos = [230,200];
+        hunterPos = [0,0];
+        walls = [];
         hunterMoves = [];
         preysMoves = [];
+        errors = [];
     });
 });
 
