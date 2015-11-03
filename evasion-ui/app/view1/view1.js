@@ -14,6 +14,7 @@ angular.module('myApp.view1', ['ngRoute'])
     var playerPos2=[230,200];
     var wallIds =  {};
     var walls = [];
+    var gameRunning = true;
     $scope.SCORE = 0;
     var pubSocket = new WebSocket('ws://localhost:1990');
 
@@ -24,8 +25,9 @@ angular.module('myApp.view1', ['ngRoute'])
     pubSocket.onmessage = function (pubTurn) {
         //console.log(pubTurn.data);
         var turn = JSON.parse(pubTurn.data);
-        if (turn.gameover) {
-            window.alert("Hunter Won");
+        if (turn.gameover && gameRunning) {
+            window.alert("Hunter Won! Took " + turn.time);
+            gameRunning = false;
         }
         playerPos = [ turn.hunter[0], turn.hunter[1] ];
         playerPos2 = [ turn.prey[0], turn.prey[1] ];
