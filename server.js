@@ -97,13 +97,20 @@ var connectionArray = [];
 
 function publish (data) {
   for (var i = 0; i < connectionArray.length; i++) {
-    connectionArray[i].send(data);
+      if (connectionArray[i] != undefined)
+        connectionArray[i].send(data);
   }
 }
+
+var conIdArr = {};
 
 socket.on('request', function(request) {
     connectionArray.push(request.accept(null, request.origin));
 });
+/*
+socket.on('close', function(request) {
+    connectionArray.push(request.accept(null, request.origin));
+});*/
 
 hunterSocket.on('request', function(request) {
     connection2 = request.accept(null, request.origin);
