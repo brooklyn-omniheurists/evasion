@@ -28,6 +28,7 @@ var time = 0;
 var timeSinceLastBuild = -100;
 var lastWallId = 0;
 var errorList = [];
+var failDels = [];
 
 var Wall, isPointOnWall, isWallIntersecting, line_intersects, move, moveHunter, movePrey, startPoint, useCoords, useLines, wall1, wall2;
 var RotationDirection, buildWallCoolingDown, canDeleteWall, cardinalDirections, compareToPoint, getCardinalDirection, hasHunterWon, isSquished, isWallIntersectingHunter, isWallIntersectingPrey, numWallsIsMaxed, willWallCauseSquishing, isValidWall;
@@ -248,12 +249,13 @@ function buildWall(data) {
       }
     }
 }
-var failDels = [];
+
 function deleteWalls(data) {
-     var failDels = [];
      data.wallIds.forEach(deleteWallById);
-     var error = new EvasionError("Walls " + failDels + " do not exist", errorCodes.DELETE_FAILED, data);
-     errorList.push(error);
+     if(failDels.length > 0){
+     	var error = new EvasionError("Walls " + failDels + " do not exist", errorCodes.DELETE_FAILED, data);
+	errorList.push(error);
+     }
 }
 
 function deleteWallById(currentValue) {
@@ -343,6 +345,7 @@ function broadcastJson(){
   json.gameover = hasHunterWon(hunterPos, preyPos, walls);
   json.errors = errorList;
   errorList = [];
+  failDels = [];
   return JSON.stringify(json);
 }
 
