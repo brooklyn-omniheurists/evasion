@@ -97,13 +97,20 @@ var connectionArray = [];
 
 function publish (data) {
   for (var i = 0; i < connectionArray.length; i++) {
-    connectionArray[i].send(data);
+      if (connectionArray[i] != undefined)
+        connectionArray[i].send(data);
   }
 }
+
+var conIdArr = {};
 
 socket.on('request', function(request) {
     connectionArray.push(request.accept(null, request.origin));
 });
+/*
+socket.on('close', function(request) {
+    connectionArray.push(request.accept(null, request.origin));
+});*/
 
 hunterSocket.on('request', function(request) {
     connection2 = request.accept(null, request.origin);
@@ -208,7 +215,7 @@ function processHunter(data) {
 
 function buildWall(data) {
     var properDirection = getProperDirection(data.wall.direction);
-        
+
     var parsedWall = {};
         if(properDirection === cardinalDirections.N || properDirection === cardinalDirections.S){
           parsedWall = generateVerticalWall(hunterPos,walls);
@@ -329,6 +336,7 @@ function sendMove(nextMove) {
 function broadcastJson(){
   var json = {};
   json.hunter = hunterPos;
+  json.hunterDir = stringFromValue(hunterDir);
   json.prey = preyPos;
   json.walls = properWallOutput(walls);
   json.time = time;

@@ -61,8 +61,8 @@ BODY {
     background-image: url(overlay.gif);
 }
 #map, #underMap {
-    top: 50px;
-    left: 20px;
+    top: 0px;
+    left: 40px;
     position: absolute;
 }
 #copyright {
