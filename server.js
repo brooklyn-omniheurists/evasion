@@ -178,49 +178,22 @@ function getProperDirection(direction){
   return cardinalDirections[direction];
 }
 
-var failDels = [];
 function processHunter(data) {
         //{command:'B',wall: { length:<int>,direction:<cardinalDirections enum> }
         //{command:'D',wallIndex:<int>}
         //{command:'M'}
     console.log("processHunter");
     var validCommand = false;
-    var properDirection = cardinalDirections.N;
-    if (data.command == 'B') {
-        // check if valid wall, right length, allowed to build wall (number and time)
-        properDirection = getProperDirection(data.wall.direction);
-        //console.log(properDirection);
-        //console.log(properDirection);
-        // data.wall.position = move(hunterPos,properDirection);
-        var parsedWall = {};
-        parsedWall.length = data.wall.length;
-        parsedWall.position = hunterPos;
-        parsedWall.direction = properDirection;
-
-        //console.log("POSITION: " + data.wall.position);
-        var valid = isValidWall(parsedWall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos, data);
-        if (valid) {
-          var error;
-          if(buildWallCoolingDown(time, timeSinceLastBuild, COOL_DOWN_TIME)) {
-            error = new EvasionError("Wall could not be built.", errorCodes.WAIT_TIME, data);
-            errorList.push(error);
-          } else if(numWallsIsMaxed(MAX_WALLS,walls)){
-            error = new EvasionError("Wall could not be built.", errorCodes.TOO_MANY_WALLS, data);
-            errorList.push(error);
-          } else {
-	    parsedWall.id = lastWallId;
-            walls.push(parsedWall);
-            timeSinceLastBuild = time;
-	    lastWallId++;
-          }
-        }
+    if (data.command == "BD") {
+        deleteWalls(data);
+        buildWall(data);
+    }
+    else if (data.command == 'B') {
+        buildWall(data);
         validCommand = true;
     }
     else if (data.command == 'D') {
-	failDels = [];
-	data.wallIds.forEach(deleteWallsById);
-        var error = new EvasionError("Walls " + failDels + " do not exist", errorCodes.DELETE_FAILED, data);
-	errorList.push(error);
+        deleteWalls(data);
         validCommand = true;
     }
     else if (data.command == 'M') {
@@ -233,8 +206,50 @@ function processHunter(data) {
     }
 }
 
+function buildWall(data) {
+    var properDirection = getProperDirection(data.wall.direction);
+        
+    var parsedWall = {};
+        if(properDirection === cardinalDirections.N || properDirection === cardinalDirections.S){
+          parsedWall = generateVerticalWall(hunterPos,walls);
+        }
+        if(properDirection === cardinalDirections.W || properDirection === cardinalDirections.E){
+          parsedWall = generateHorizontalWall(hunterPos,walls);
+        }
+        if(properDirection == null){
+          if(data.wall.direction === "V")
+            parsedWall = generateVerticalWall(hunterPos,walls);
+          if(data.wall.direction === "H")
+            parsedWall = generateHorizontalWall(hunterPos,walls);
+        }
 
-function deleteWallsById(currentValue) {
+    // check if valid wall, right length, allowed to build wall (number and time)
+    var valid = isValidWall(parsedWall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos, data);
+    if (valid) {
+      var error;
+      if(buildWallCoolingDown(time, timeSinceLastBuild, COOL_DOWN_TIME)) {
+        error = new EvasionError("Wall could not be built.", errorCodes.WAIT_TIME, data);
+        errorList.push(error);
+      } else if(numWallsIsMaxed(MAX_WALLS,walls)){
+        error = new EvasionError("Wall could not be built.", errorCodes.TOO_MANY_WALLS, data);
+        errorList.push(error);
+      } else {
+        parsedWall.id = lastWallId;
+        walls.push(parsedWall);
+        timeSinceLastBuild = time;
+        lastWallId++;
+      }
+    }
+}
+var failDels = [];
+function deleteWalls(data) {
+     var failDels = [];
+     data.wallIds.forEach(deleteWallById);
+     var error = new EvasionError("Walls " + failDels + " do not exist", errorCodes.DELETE_FAILED, data);
+     errorList.push(error);
+}
+
+function deleteWallById(currentValue) {
 	var found = false;
 	for (var i = 0; i < walls.length; i++) {
 		if (wallEquals(currentValue,walls[i])) {
@@ -601,6 +616,91 @@ isValidWall = function(newWall, walls, hunterPos, hunterDir, preyPos, data) {
     return !(intersectwall || intersecthunter || intersectprey || squishing);
 };
 
+
+function easternPoint(pos,walls){
+  var x_val = pos[0];
+  var y_val = pos[1];
+  var newPoint = [301, y_val];
+  for(var i = 0; i < walls.length; i++){
+    if(isPointOnWall([walls[i].position[0], y_val], walls[i])){
+      if(newPoint[0] >= walls[i].position[0] && walls[i].position[0] > x_val)
+        if(walls[i].direction == cardinalDirections.W)
+          newPoint = [walls[i].position[0] - walls[i].length, y_val];
+        else
+          newPoint = [walls[i].position[0], y_val];
+    }
+  }
+  return newPoint;
+}
+
+function westernPoint(pos,walls){
+  var x_val = pos[0];
+  var y_val = pos[1];
+  var newPoint = [-1, y_val];
+  for(var i = 0; i < walls.length; i++){
+    if(isPointOnWall([walls[i].position[0], y_val], walls[i])){
+      if(newPoint[0] <= walls[i].position[0] && walls[i].position[0] < x_val)
+        if(walls[i].direction == cardinalDirections.E)
+          newPoint = [walls[i].position[0] + walls[i].length, y_val];
+        else
+          newPoint = [walls[i].position[0], y_val];
+    }
+  }
+  return newPoint;
+}
+
+function northernPoint(pos,walls){
+  var x_val = pos[0];
+  var y_val = pos[1];
+  var newPoint = [x_val, -1];
+  for(var i = 0; i < walls.length; i++){
+    if(isPointOnWall([x_val, walls[i].position[1]], walls[i])){
+      if(newPoint[1] <= walls[i].position[1] && walls[i].position[1] < y_val)
+        if(walls[i].direction == cardinalDirections.S)
+          newPoint = [x_val, walls[i].position[1] + walls[i].length];
+        else
+          newPoint = [x_val, walls[i].position[1]];
+    }
+  }
+  return newPoint;
+}
+
+function southernPoint(pos,walls){
+  var x_val = pos[0];
+  var y_val = pos[1];
+  var newPoint = [x_val, 301];
+  for(var i = 0; i < walls.length; i++){
+    if(isPointOnWall([x_val, walls[i].position[1]], walls[i])){
+      if(newPoint[1] >= walls[i].position[1] && walls[i].position[1] > y_val)
+        if(walls[i].direction == cardinalDirections.N)
+          newPoint = [x_val, walls[i].position[1] - walls[i].length];
+        else
+          newPoint = [x_val, walls[i].position[1]];
+    }
+  }
+  return newPoint;
+}
+
+function generateVerticalWall(pos, walls){
+  var northPoint = northernPoint(pos, walls);
+  var southPoint = southernPoint(pos, walls);
+  northPoint[1] = northPoint[1]+1;
+  southPoint[1] = southPoint[1]-1;
+  var length = southPoint[1] - northPoint[1];
+  var out = new Wall(northPoint, length, cardinalDirections.S);
+  return out;
+}
+
+function generateHorizontalWall(pos, walls){
+  var eastPoint = easternPoint(pos, walls);
+  var westPoint = westernPoint(pos, walls);
+  eastPoint[0] = eastPoint[0]-1;
+  westPoint[0] = westPoint[0]+1;
+  var length = eastPoint[0] - westPoint[0];
+  var out = new Wall(westPoint, length, cardinalDirections.E);
+  return out;
+}
+
 /*
 processHunter({command:"B",wall:{length:2,direction:"S"}});
 console.log(walls);
@@ -610,7 +710,9 @@ console.log(walls);
 processHunter({command:"D",wallIds:[0]});
 console.log(failDels);
 buildFakeWalls(5, 10);
-processHunter({command:"D",wallIds:[2,4]});
+hunterPos  = [hunterPos[0]+5,hunterPos[1]+5];
+time+=5;
+processHunter({command:"BD",wall: {length:5, direction:"W"}, wallIds:[2,4]});
 console.log(walls);
 buildFakeWalls(2, 60);
 console.log(walls);
