@@ -31,6 +31,6 @@ end
 loop do
   dr = do_something
   sleep 0.5
-  publisherSocket "stay alive"
+  publisherSocket.send "stay alive"
   hunterSocket.send dr.to_json
 end
