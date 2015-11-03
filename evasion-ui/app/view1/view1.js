@@ -10,17 +10,19 @@ angular.module('myApp.view1', ['ngRoute'])
 }])
 
 .controller('View1Ctrl', ['$scope',function($scope) {
-    var playerPos=[0,0]; 
-    var playerPos2=[230,200]; 
+    var playerPos=[0,0];
+    var playerPos2=[230,200];
+    var wallIds =  {};
+    var walls = [];
     $scope.SCORE = 0;
     var pubSocket = new WebSocket('ws://localhost:1990');
 
     pubSocket.onopen = function (e) {
         console.log("OPEN");
     }
-    
+
     pubSocket.onmessage = function (pubTurn) {
-        console.log(pubTurn);
+        //console.log(pubTurn.data);
         var turn = JSON.parse(pubTurn.data);
         if (turn.gameover) {
             window.alert("Hunter Won");
@@ -29,86 +31,144 @@ angular.module('myApp.view1', ['ngRoute'])
         playerPos2 = [ turn.prey[0], turn.prey[1] ];
         for (var i = 0; i < turn.walls.length; i++) {
             var curWall = turn.walls[i];
-            var origin = curWall.position;
-            switch(curWall.direction) {
-                case "N":
-                case "S": vertWall(origin[0],origin[1],curWall.direction,curWall.length);
-                    break;
-                case "E":
-                case "W": horWall(origin[0],origin[1],curWall.direction,curWall.length);
-                    break;
+            if (wallIds[curWall.id] == undefined ) {
+                //var origin = curWall.position;
+                wallIds[curWall.id] = walls.length; // make
+                switch(curWall.direction) {
+                    case "S": vertWall(curWall);
+                        break;
+                    case "E": horWall(curWall);
+                        break;
+                }
+            }
+            else {
+                if (walls[wallIds[curWall.id]] != undefined) {
+                    walls[wallIds[curWall.id]].build = 2; // keep
+                }
+                else {
+                    console.log(wallIds[curWall.id]);
+                }
+            }
+
+        }
+
+        for (var i = 0; i < walls.length; i++) {
+            var curWall = walls[i];
+            if (curWall.build == 1) {
+                curWall.hide();
+                walls.splice(wallIds[curWall.id], 1);
+                var id = null;
+                for (id in wallIds) {
+                    if (id > curWall.id) {
+                        wallIds[id]--;
+                    }
+                }
+                /*var origin = curWall.position;
+                switch(curWall.direction) {
+                    case "S": vertWall(origin[0],origin[1],curWall.direction,curWall.length,true);
+                        break;
+                    case "E": horWall(origin[0],origin[1],curWall.direction,curWall.length,true);
+                        break;
+                }
+                wallIds[curWall.id] = undefined;*/
+            }
+            else {
+                curWall.build = 1;
             }
         }
-        $scope.SCORE = turn.time;
+
+    //console.log(wallIds);
+    $scope.SCORE = turn.time;
 	$scope.$apply();
         drawCanvas();
     }
-    
-    function vertWall(oldX,oldY,dir,length) {
-	if (dir == "N") {
+
+    function vertWall (wall) {//(oldX,oldY,dir,length,del) {
+	/*if (dir == "N") {
 		for (var i = oldX, j=oldY; j > oldY-length; j--) {
 		    drawWall(i,j);
 		}
-	}
-	if (dir == "S") {
-		for (var i = oldX, j=oldY; j <= oldY+length; j++) {
-		    drawWall(i,j);
-		}
-	}
+	}*/
+        console.log("vertWall");
+        if (wall.direction == "S") {
+            var oldX = wall.position[0];
+            var oldY = wall.position[1];
+            var finalX = oldX;
+            var finalY = oldY + wall.length;
+            var tempP = map.path('M' + oldX + ',' + oldY + ' L' + finalX + ',' + finalY);
+            tempP.build = 0;
+            tempP.id = wall.id;
+            walls.push(tempP);
+            /*
+            for (var i = oldX, j=oldY; j <= oldY+length; j++) {
+                drawWall(i,j,del);
+            }*/
+        }
     }
-    function horWall (oldX,oldY,dir,length) {
-	if (dir == "E") {
-		for (var i = oldX, j=oldY; i <= oldX+length; i++) {
-		    drawWall(i,j);
-		}
-	}
-	if (dir == "W") {
-		for (var i = oldX, j=oldY; i > oldX-length; i--) {
-		    drawWall(i,j);
-		}
-	}
+    function horWall (wall) {//(oldX,oldY,dir,length,del) {
+        console.log("horWall");
+        if (wall.direction == "E") {
+            var oldX = wall.position[0];
+            var oldY = wall.position[1];
+            var finalX = oldX + wall.length;
+            var finalY = oldY;
+            var tempP = map.path('M' + oldX + ',' + oldY + ' L' + finalX + ',' + finalY);
+            tempP.build = 0;
+            tempP.id = wall.id;
+            walls.push(tempP);
+            /*
+            for (var i = oldX, j=oldY; i <= oldX+length; i++) {
+                drawWall(i,j,del);
+            }*/
+        }
+        /*if (dir == "W") {
+            for (var i = oldX, j=oldY; i > oldX-length; i--) {
+                drawWall(i,j);
+            }
+        }*/
     }
-    
-     
-    
+
     var arenaSize = 300;
-    var UNIT_SIZE = 2;
+    var UNIT_SIZE = 1;
     var playerDir=pi/4;
     var samples=200;
     var pi=Math.PI;
     var face = [];
     var mapball = null;
     var mapball2 = null;
-    
+
     var theMap = document.getElementById("map");
-    var actualSize = arenaSize+2;
-    var dimension = actualSize*UNIT_SIZE;
+    //var actualSize = arenaSize+2;
+    var dimension = arenaSize*UNIT_SIZE;
     var map=Raphael(theMap,dimension,dimension);
-    var arena=initArena(actualSize,actualSize); 
+    var arena=initArena(arenaSize,arenaSize);
     initUnderMap();
     drawCanvas();
 
-    //var createdWalls = [];
-    function drawWall(i, j) {
-        arena[i][j]==2;
-        var wallUnit = map.rect((i+1)*UNIT_SIZE,(j+1)*UNIT_SIZE,UNIT_SIZE,UNIT_SIZE).attr({fill:"red", stroke:"red"});
+    function drawWall(i, j, del) {
+        //arena[i][j]=2;
+        var color = "red";
+        if (del) {
+            color = "white";
+        }
+        var wallUnit = map.rect(i*UNIT_SIZE,j*UNIT_SIZE,UNIT_SIZE,UNIT_SIZE).attr({fill:color, stroke:color});
     }
-    
+
     $scope.arenaSize=arenaSize;
     $scope.UNIT_SIZE = UNIT_SIZE;
-    $scope.dimension = actualSize*UNIT_SIZE;
-    
+    $scope.dimension = dimension;
+
     function initArena(arenaWidth,arenaLength) {
         var arena=[];
         for (var i=0; i<arenaWidth; i++) {
             arena[i] = [];
             for (var j=0; j<arenaLength; j++) {
                 arena[i][j] = 1;
-                if (i==0 || i==(arenaWidth-1)) {arena[i][j]=2;} 
-                if (j==0 || j==(arenaLength-1)) {arena[i][j]=2;} 
+                if (i==0 || i==(arenaWidth-1)) {arena[i][j]=2;}
+                if (j==0 || j==(arenaLength-1)) {arena[i][j]=2;}
             }
         }
-        
+
         var cellStack = [];
         var currCell = [0,0];
         var currX = currCell[0];
@@ -122,10 +182,10 @@ angular.module('myApp.view1', ['ngRoute'])
                 cellStack.push(currCell);
             }
         }
-        
+
         return arena;
     }
-    
+
     function initUnderMap(){
         var ulen = arena.length;
         var uwid = arena[0].length;
@@ -135,54 +195,19 @@ angular.module('myApp.view1', ['ngRoute'])
                 var i8 = i*UNIT_SIZE;
                 var j8 = j*UNIT_SIZE;
                 if (arena[i][j]==1) { map.rect(i8,j8, UNIT_SIZE,UNIT_SIZE).attr({fill:"#444", stroke:"#444"}); }
-                if (arena[i][j]==2) { map.rect(i8,j8, UNIT_SIZE,UNIT_SIZE).attr({fill:"#888", stroke:"#888"}); }
+                //if (arena[i][j]==2) { map.rect(i8,j8, UNIT_SIZE,UNIT_SIZE).attr({fill:"#888", stroke:"#888"}); }
             }
         }
     }
-    
+
     function drawCanvas(){
-	/*
-        var theta = playerDir-pi/6;
 
-        var wall=wallDistance(theta);
-
-        var linGrad;
-
-        var tl,tr,bl,br;
-
-        var theta1,theta2,fix1,fix2,j = 0;
-        
-        for (var i=0; i<wall.length; i+=4) {
-
-            theta1=playerDir-pi/6 + pi*wall[i]/(3*samples);
-            theta2=playerDir-pi/6 + pi*wall[i+2]/(3*samples);
-
-            fix1 = Math.cos(theta1-playerDir);
-            fix2 = Math.cos(theta2-playerDir);
-
-            var wallH1=100/(wall[i+1]*fix1);
-            var wallH2=100/(wall[i+3]*fix2);
-
-            tl=[wall[i]*2 + .001, 150-wallH1*1];
-            tr=[wall[i+2]*2 + .001, 150-wallH2*1];
-            br=[wall[i+2]*2 + .001, tr[1]+wallH2*2];
-            bl=[wall[i]*2 + .001, tl[1]+wallH1*2];
-
-            var shade1=Math.floor(wallH1*2+20); if (shade1>255) shade1=255;
-            var shade2=Math.floor(wallH2*2+20); if (shade2>255) shade2=255;
-
-            var c1 = 'rgb('+(face[i/4]%2==0 ? shade1 : 0)+','+(face[i/4]==1 ? shade1 : 0)+','+(face[i/4]==2 ? 0 : shade1)+')';
-            var c2 = 'rgb('+(face[i/4]%2==0 ? shade2 : 0)+','+(face[i/4]==1 ? shade2 : 0)+','+(face[i/4]==2 ? 0 : shade2)+')';
-
-        }*/
-        //var walls = [];
-        
         var bSize = 4*UNIT_SIZE;
         if (!mapball && !mapball2) {
             // HUNTER
-            mapball = map.circle((playerPos[0]+1)*UNIT_SIZE, (playerPos[1]+1)*UNIT_SIZE, bSize/2).attr({fill:"#36c", stroke: "none"});
+            mapball = map.circle(playerPos[0]*UNIT_SIZE, playerPos[1]*UNIT_SIZE, bSize/2).attr({fill:"#36c", stroke: "none"});
             // PREY
-            mapball2 = map.circle((playerPos2[0]+1)*UNIT_SIZE, (playerPos2[1]+1)*UNIT_SIZE, bSize/2).attr({fill:"green", stroke: "none"});
+            mapball2 = map.circle(playerPos2[0]*UNIT_SIZE, playerPos2[1]*UNIT_SIZE, bSize/2).attr({fill:"green", stroke: "none"});
         } else {
             mapball.attr({
                 cx: playerPos[0] * UNIT_SIZE,
@@ -193,7 +218,6 @@ angular.module('myApp.view1', ['ngRoute'])
                 cy: playerPos2[1] * UNIT_SIZE
             });
         }
-        //while (walls[j]) walls[j++].hide();
     }
 
 }]);
