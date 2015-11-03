@@ -5,6 +5,7 @@ __Produces__
 ```json
  {
     "hunter": [1,1],
+    "hunterDir": "SE",
     "prey": [231,200],
     "walls": [
            {
