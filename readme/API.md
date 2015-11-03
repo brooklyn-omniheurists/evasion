@@ -43,6 +43,31 @@ errorCodes[6] = "These wall ids do not exist and therefore could not be deleted"
 
 ## ws:localhost:1991 (Hunter's Port)
 ### Building walls
+
+#### NEW METHOD
+__Consumes__
+
+__Vertical Walls:__
+```json
+ {
+   "command":"B",
+   "wall": {
+     "direction": "V" 
+   }
+  }
+```
+
+__Horizontal Walls:__
+```json
+ {
+   "command":"B",
+   "wall": {
+     "direction": "H" 
+   }
+  }
+```
+
+#### OLD METHOD
 __Consumes__
 ```json
  {
@@ -61,6 +86,19 @@ __Consumes__
     "wallIds": [2,5]
  }
 ```
+
+### Building AND deleting walls
+__Consumes__
+```json
+{
+    "command": "BD",
+    "wall": {
+     "direction": "V"
+    },
+    "wallIds": [2,5]
+ }
+```
+
 ### Moving w/o Building or Deleting Walls
 __Consumes__
 ```javascript
