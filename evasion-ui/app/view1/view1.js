@@ -10,8 +10,8 @@ angular.module('myApp.view1', ['ngRoute'])
 }])
 
 .controller('View1Ctrl', ['$scope',function($scope) {
-    var playerPos=[0,0]; 
-    var playerPos2=[230,200]; 
+    var playerPos=[0,0];
+    var playerPos2=[230,200];
     var wallIds =  {};
     var walls = [];
     $scope.SCORE = 0;
@@ -20,7 +20,7 @@ angular.module('myApp.view1', ['ngRoute'])
     pubSocket.onopen = function (e) {
         console.log("OPEN");
     }
-    
+
     pubSocket.onmessage = function (pubTurn) {
         //console.log(pubTurn.data);
         var turn = JSON.parse(pubTurn.data);
@@ -49,9 +49,9 @@ angular.module('myApp.view1', ['ngRoute'])
                     console.log(wallIds[curWall.id]);
                 }
             }
-            
+
         }
-        
+
         for (var i = 0; i < walls.length; i++) {
             var curWall = walls[i];
             if (curWall.build == 1) {
@@ -76,13 +76,13 @@ angular.module('myApp.view1', ['ngRoute'])
                 curWall.build = 1;
             }
         }
-        
+
     //console.log(wallIds);
     $scope.SCORE = turn.time;
 	$scope.$apply();
         drawCanvas();
     }
-    
+
     function vertWall (wall) {//(oldX,oldY,dir,length,del) {
 	/*if (dir == "N") {
 		for (var i = oldX, j=oldY; j > oldY-length; j--) {
@@ -127,21 +127,21 @@ angular.module('myApp.view1', ['ngRoute'])
             }
         }*/
     }
-        
+
     var arenaSize = 300;
-    var UNIT_SIZE = 2.5;
+    var UNIT_SIZE = 1;
     var playerDir=pi/4;
     var samples=200;
     var pi=Math.PI;
     var face = [];
     var mapball = null;
     var mapball2 = null;
-    
+
     var theMap = document.getElementById("map");
     //var actualSize = arenaSize+2;
     var dimension = arenaSize*UNIT_SIZE;
     var map=Raphael(theMap,dimension,dimension);
-    var arena=initArena(arenaSize,arenaSize); 
+    var arena=initArena(arenaSize,arenaSize);
     initUnderMap();
     drawCanvas();
 
@@ -153,22 +153,22 @@ angular.module('myApp.view1', ['ngRoute'])
         }
         var wallUnit = map.rect(i*UNIT_SIZE,j*UNIT_SIZE,UNIT_SIZE,UNIT_SIZE).attr({fill:color, stroke:color});
     }
-    
+
     $scope.arenaSize=arenaSize;
     $scope.UNIT_SIZE = UNIT_SIZE;
     $scope.dimension = dimension;
-    
+
     function initArena(arenaWidth,arenaLength) {
         var arena=[];
         for (var i=0; i<arenaWidth; i++) {
             arena[i] = [];
             for (var j=0; j<arenaLength; j++) {
                 arena[i][j] = 1;
-                if (i==0 || i==(arenaWidth-1)) {arena[i][j]=2;} 
-                if (j==0 || j==(arenaLength-1)) {arena[i][j]=2;} 
+                if (i==0 || i==(arenaWidth-1)) {arena[i][j]=2;}
+                if (j==0 || j==(arenaLength-1)) {arena[i][j]=2;}
             }
         }
-        
+
         var cellStack = [];
         var currCell = [0,0];
         var currX = currCell[0];
@@ -182,10 +182,10 @@ angular.module('myApp.view1', ['ngRoute'])
                 cellStack.push(currCell);
             }
         }
-        
+
         return arena;
     }
-    
+
     function initUnderMap(){
         var ulen = arena.length;
         var uwid = arena[0].length;
@@ -199,9 +199,9 @@ angular.module('myApp.view1', ['ngRoute'])
             }
         }
     }
-    
+
     function drawCanvas(){
-        
+
         var bSize = 4*UNIT_SIZE;
         if (!mapball && !mapball2) {
             // HUNTER
