@@ -193,9 +193,18 @@ function processHunter(data) {
         //console.log(properDirection);
         // data.wall.position = move(hunterPos,properDirection);
         var parsedWall = {};
-        parsedWall.length = data.wall.length;
-        parsedWall.position = hunterPos;
-        parsedWall.direction = properDirection;
+        if(properDirection === cardinalDirections.N || properDirection === cardinalDirections.S){
+          parsedWall = generateVerticalWall(hunterPos,walls);
+        }
+        if(properDirection === cardinalDirections.W || properDirection === cardinalDirections.E){
+          parsedWall = generateHorizontalWall(hunterPos,walls);
+        }
+        if(properDirection == null){
+          if(data.wall.direction === "V")
+            parsedWall = generateVerticalWall(hunterPos,walls);
+          if(data.wall.direction === "H")
+            parsedWall = generateHorizontalWall(hunterPos,walls);
+        }
 
         //console.log("POSITION: " + data.wall.position);
         var valid = isValidWall(parsedWall, walls.concat(globalWalls), hunterPos, hunterDir, preyPos, data);
@@ -600,6 +609,90 @@ isValidWall = function(newWall, walls, hunterPos, hunterDir, preyPos, data) {
   }
     return !(intersectwall || intersecthunter || intersectprey || squishing);
 };
+
+function easternPoint(pos,walls){
+  var x_val = pos[0];
+  var y_val = pos[1];
+  var newPoint = [301, y_val];
+  for(var i = 0; i < walls.length; i++){
+    if(isPointOnWall([walls[i].position[0], y_val], walls[i])){
+      if(newPoint[0] >= walls[i].position[0] && walls[i].position[0] > x_val)
+        if(walls[i].direction == cardinalDirections.W)
+          newPoint = [walls[i].position[0] - walls[i].length, y_val];
+        else
+          newPoint = [walls[i].position[0], y_val];
+    }
+  }
+  return newPoint;
+}
+
+function westernPoint(pos,walls){
+  var x_val = pos[0];
+  var y_val = pos[1];
+  var newPoint = [-1, y_val];
+  for(var i = 0; i < walls.length; i++){
+    if(isPointOnWall([walls[i].position[0], y_val], walls[i])){
+      if(newPoint[0] <= walls[i].position[0] && walls[i].position[0] < x_val)
+        if(walls[i].direction == cardinalDirections.E)
+          newPoint = [walls[i].position[0] + walls[i].length, y_val];
+        else
+          newPoint = [walls[i].position[0], y_val];
+    }
+  }
+  return newPoint;
+}
+
+function northernPoint(pos,walls){
+  var x_val = pos[0];
+  var y_val = pos[1];
+  var newPoint = [x_val, -1];
+  for(var i = 0; i < walls.length; i++){
+    if(isPointOnWall([x_val, walls[i].position[1]], walls[i])){
+      if(newPoint[1] <= walls[i].position[1] && walls[i].position[1] < y_val)
+        if(walls[i].direction == cardinalDirections.S)
+          newPoint = [x_val, walls[i].position[1] + walls[i].length];
+        else
+          newPoint = [x_val, walls[i].position[1]];
+    }
+  }
+  return newPoint;
+}
+
+function southernPoint(pos,walls){
+  var x_val = pos[0];
+  var y_val = pos[1];
+  var newPoint = [x_val, 301];
+  for(var i = 0; i < walls.length; i++){
+    if(isPointOnWall([x_val, walls[i].position[1]], walls[i])){
+      if(newPoint[1] >= walls[i].position[1] && walls[i].position[1] > y_val)
+        if(walls[i].direction == cardinalDirections.N)
+          newPoint = [x_val, walls[i].position[1] - walls[i].length];
+        else
+          newPoint = [x_val, walls[i].position[1]];
+    }
+  }
+  return newPoint;
+}
+
+function generateVerticalWall(pos, walls){
+  var northPoint = northernPoint(pos, walls);
+  var southPoint = southernPoint(pos, walls);
+  northPoint[1] = northPoint[1]+1;
+  southPoint[1] = southPoint[1]-1;
+  var length = southPoint[1] - northPoint[1];
+  var out = new Wall(northPoint, length, cardinalDirections.S);
+  return out;
+}
+
+function generateHorizontalWall(pos, walls){
+  var eastPoint = easternPoint(pos, walls);
+  var westPoint = westernPoint(pos, walls);
+  eastPoint[0] = eastPoint[0]-1;
+  westPoint[0] = westPoint[0]+1;
+  var length = eastPoint[0] - westPoint[0];
+  var out = new Wall(westPoint, length, cardinalDirections.E);
+  return out;
+}
 
 /*
 processHunter({command:"B",wall:{length:2,direction:"S"}});
