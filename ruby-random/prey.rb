@@ -36,5 +36,6 @@ end
 
 loop do
   sleep 0.5
+  publisherSocket.send "stay alive"
   preySocket.send do_something.to_json
 end
