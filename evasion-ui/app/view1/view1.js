@@ -42,7 +42,12 @@ angular.module('myApp.view1', ['ngRoute'])
                 }
             }
             else {
-                walls[wallIds[curWall.id]].build = 2; // keep
+                if (walls[wallIds[curWall.id]] != undefined) {
+                    walls[wallIds[curWall.id]].build = 2; // keep
+                }
+                else {
+                    console.log(wallIds[curWall.id]);
+                }
             }
             
         }
@@ -52,6 +57,7 @@ angular.module('myApp.view1', ['ngRoute'])
             if (curWall.build == 1) {
                 curWall.hide();
                 walls.splice(wallIds[curWall.id], 1);
+                var id = null;
                 for (id in wallIds) {
                     if (id > curWall.id) {
                         wallIds[id]--;
@@ -91,6 +97,7 @@ angular.module('myApp.view1', ['ngRoute'])
             var finalY = oldY + wall.length;
             var tempP = map.path('M' + oldX + ',' + oldY + ' L' + finalX + ',' + finalY);
             tempP.build = 0;
+            tempP.id = wall.id;
             walls.push(tempP);
             /*
             for (var i = oldX, j=oldY; j <= oldY+length; j++) {
@@ -107,6 +114,7 @@ angular.module('myApp.view1', ['ngRoute'])
             var finalY = oldY;
             var tempP = map.path('M' + oldX + ',' + oldY + ' L' + finalX + ',' + finalY);
             tempP.build = 0;
+            tempP.id = wall.id;
             walls.push(tempP);
             /*
             for (var i = oldX, j=oldY; i <= oldX+length; i++) {
