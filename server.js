@@ -29,6 +29,11 @@ var timeSinceLastBuild = -100;
 var lastWallId = 0;
 var errorList = [];
 var failDels = [];
+var hunterTimeLeft = 1000;
+var hunterTimedOut = false;
+var preyTimeLeft = 120;
+var preyTimedOut = false;
+var publishedTime = new Date();
 
 var Wall, isPointOnWall, isWallIntersecting, line_intersects, move, moveHunter, movePrey, startPoint, useCoords, useLines, wall1, wall2;
 var RotationDirection, buildWallCoolingDown, canDeleteWall, cardinalDirections, compareToPoint, getCardinalDirection, hasHunterWon, isSquished, isWallIntersectingHunter, isWallIntersectingPrey, numWallsIsMaxed, willWallCauseSquishing, isValidWall;
@@ -98,8 +103,10 @@ var connectionArray = [];
 
 function publish (data) {
   for (var i = 0; i < connectionArray.length; i++) {
-      if (connectionArray[i] != undefined)
+      if (connectionArray[i] != undefined){
         connectionArray[i].send(data);
+        publishedTime = new Date();
+      }
   }
 }
 
@@ -186,7 +193,24 @@ function getProperDirection(direction){
   return cardinalDirections[direction];
 }
 
+function updateHunterTime(){
+  hunterTimeLeft -= ((new Date()) - publishedTime) / 1000;
+  if (hunterTimeLeft <= 0)
+    hunterTimedOut = true;
+  if (hunterTimeLeft > 120)
+    hunterTimeLeft = 120;
+}
+
+function updatePreyTime(){
+  preyTimeLeft -= ((new Date()) - publishedTime) / 1000;
+  if (preyTimeLeft <= 0)
+    preyTimedOut = true;
+  if (preyTimeLeft > 120)
+    preyTimeLeft = 120;
+}
+
 function processHunter(data) {
+    updateHunterTime();
         //{command:'B',wall: { length:<int>,direction:<cardinalDirections enum> }
         //{command:'D',wallIndex:<int>}
         //{command:'M'}
@@ -277,6 +301,7 @@ function wallEquals(id, wall) {
 }
 
 function processPrey(data) {
+    updatePreyTime();
     //{command:'M',direction: :<cardinalDirections enum>}
     //{command:'P'}
     //{command:'W'}
@@ -343,6 +368,10 @@ function broadcastJson(){
   json.walls = properWallOutput(walls);
   json.time = time;
   json.gameover = hasHunterWon(hunterPos, preyPos, walls);
+  json.hunterTime = Math.round(hunterTimeLeft * 100) / 100;
+  json.hunterTimedOut = hunterTimedOut;
+  json.preyTime = Math.round(preyTimeLeft * 100) / 100 ;
+  json.preyTimedOut = preyTimedOut;
   json.errors = errorList;
   errorList = [];
   failDels = [];
