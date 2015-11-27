@@ -195,6 +195,7 @@ function processHunter(data) {
     if (data.command == "BD") {
         deleteWalls(data);
         buildWall(data);
+        validCommand = true;
     }
     else if (data.command == 'B') {
         buildWall(data);
