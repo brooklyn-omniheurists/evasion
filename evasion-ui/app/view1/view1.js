@@ -15,6 +15,8 @@ angular.module('myApp.view1', ['ngRoute'])
     var wallIds =  {};
     var walls = [];
     var gameRunning = true;
+    var hunterDir = "SE";
+    var audio = document.getElementById("myAudio");
     $scope.SCORE = 0;
     var pubSocket = new WebSocket('ws://localhost:1990');
 
@@ -28,6 +30,14 @@ angular.module('myApp.view1', ['ngRoute'])
         if (turn.gameover && gameRunning) {
             window.alert("Hunter Won! Took " + turn.time);
             gameRunning = false;
+        }
+        if(turn.hunterDir !== hunterDir){
+          hunterDir = turn.hunterDir;
+          if(audio.paused){
+            audio.play();
+          } else {
+            audio.currentTime = 0;
+          }
         }
         playerPos = [ turn.hunter[0], turn.hunter[1] ];
         playerPos2 = [ turn.prey[0], turn.prey[1] ];
