@@ -1,3 +1,14 @@
+var CONF = {
+    GAME_TIMEOUT: 120
+}
+var isTwoPlayer = false;
+if (process.argv.length == 3) {
+    if (process.argv[2] == "2p") {
+        isTwoPlayer = true;
+        CONF.GAME_TIMEOUT = Number.MAX_VALUE;
+    }
+}
+
 var server = require('websocket').server, http = require('http');
 
 var express = require('express'),
@@ -29,6 +40,11 @@ var timeSinceLastBuild = -100;
 var lastWallId = 0;
 var errorList = [];
 var failDels = [];
+var hunterTimeLeft = 1000;
+var hunterTimedOut = false;
+var preyTimeLeft = CONF.GAME_TIMEOUT;
+var preyTimedOut = false;
+var publishedTime = new Date();
 
 var Wall, isPointOnWall, isWallIntersecting, line_intersects, move, moveHunter, movePrey, startPoint, useCoords, useLines, wall1, wall2;
 var RotationDirection, buildWallCoolingDown, canDeleteWall, cardinalDirections, compareToPoint, getCardinalDirection, hasHunterWon, isSquished, isWallIntersectingHunter, isWallIntersectingPrey, numWallsIsMaxed, willWallCauseSquishing, isValidWall;
@@ -98,8 +114,10 @@ var connectionArray = [];
 
 function publish (data) {
   for (var i = 0; i < connectionArray.length; i++) {
-      if (connectionArray[i] != undefined)
+      if (connectionArray[i] != undefined){
         connectionArray[i].send(data);
+        publishedTime = new Date();
+      }
   }
 }
 
@@ -121,7 +139,7 @@ hunterSocket.on('request', function(request) {
         //console.log(message);
         var data = JSON.parse(message.utf8Data);
         if (data.command == "P" || data.command == 'W') {
-            process(data,connection2);
+            processAction(data,connection2);
         }
         else {
             sendMove({data:data, fun:processHunter})
@@ -136,7 +154,7 @@ preySocket.on('request', function(request) {
     connection3.on('message', function(message) {
         var data = JSON.parse(message.utf8Data);
         if (data.command == "P" || data.command == 'W') {
-            process(data,connection3);
+            processAction(data,connection3);
         }
         else {
             //console.log(moves);
@@ -165,8 +183,8 @@ function properWallOutput(walls){
   return clone;
 }
 
-function process(data, connection) {
-    console.log("process");
+function processAction(data, connection) {
+    console.log("processAction");
     if (data.command == 'P') {
         connection.send(JSON.stringify({
                             command: data.command,
@@ -186,7 +204,24 @@ function getProperDirection(direction){
   return cardinalDirections[direction];
 }
 
+function updateHunterTime(){
+  hunterTimeLeft -= ((new Date()) - publishedTime) / 1000;
+  if (hunterTimeLeft <= 0)
+    hunterTimedOut = true;
+  if (hunterTimeLeft > CONF.GAME_TIMEOUT)
+    hunterTimeLeft = CONF.GAME_TIMEOUT;
+}
+
+function updatePreyTime(){
+  preyTimeLeft -= ((new Date()) - publishedTime) / 1000;
+  if (preyTimeLeft <= 0)
+    preyTimedOut = true;
+  if (preyTimeLeft > CONF.GAME_TIMEOUT)
+    preyTimeLeft = CONF.GAME_TIMEOUT;
+}
+
 function processHunter(data) {
+    updateHunterTime();
         //{command:'B',wall: { length:<int>,direction:<cardinalDirections enum> }
         //{command:'D',wallIndex:<int>}
         //{command:'M'}
@@ -278,6 +313,7 @@ function wallEquals(id, wall) {
 }
 
 function processPrey(data) {
+    updatePreyTime();
     //{command:'M',direction: :<cardinalDirections enum>}
     //{command:'P'}
     //{command:'W'}
@@ -344,6 +380,10 @@ function broadcastJson(){
   json.walls = properWallOutput(walls);
   json.time = time;
   json.gameover = hasHunterWon(hunterPos, preyPos, walls);
+  json.hunterTime = Math.round(hunterTimeLeft * 100) / 100;
+  json.hunterTimedOut = hunterTimedOut;
+  json.preyTime = Math.round(preyTimeLeft * 100) / 100 ;
+  json.preyTimedOut = preyTimedOut;
   json.errors = errorList;
   errorList = [];
   failDels = [];

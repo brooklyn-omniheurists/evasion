@@ -17,6 +17,8 @@ angular.module('myApp.view1', ['ngRoute'])
     var gameRunning = true;
     $scope.SCORE = 0;
     var pubSocket = new WebSocket('ws://localhost:1990');
+    var socketH = new WebSocket('ws://localhost:1991');
+    var socketP = new WebSocket('ws://localhost:1992');
 
     pubSocket.onopen = function (e) {
         console.log("OPEN");
@@ -27,6 +29,14 @@ angular.module('myApp.view1', ['ngRoute'])
         var turn = JSON.parse(pubTurn.data);
         if (turn.gameover && gameRunning) {
             window.alert("Hunter Won! Took " + turn.time);
+            gameRunning = false;
+        }
+        if (turn.hunterTimedOut && gameRunning) {
+            window.alert("Awww hunter timed out! Prey survived " + turn.time);
+            gameRunning = false;
+        }
+        if (turn.preyTimedOut && gameRunning) {
+            window.alert("Awww prey timed out! Prey survived " + turn.time);
             gameRunning = false;
         }
         playerPos = [ turn.hunter[0], turn.hunter[1] ];
@@ -147,9 +157,25 @@ angular.module('myApp.view1', ['ngRoute'])
     initUnderMap();
     drawCanvas();
 
+    /*var colors = [];
+    var createDistinctColors = function() {
+        for(i = 0; i < 360; i += 360 / num_colors) {
+            var c = {hue:null,saturation:null,lightness:null};
+            c.hue = i;
+            c.saturation = 90 + randf() * 10;
+            c.lightness = 50 + randf() * 10;
+
+            colors.push(c);
+        }
+    }
+    createDistinctColors();
+    var numWalls = 0;*/
+    
     function drawWall(i, j, del) {
         //arena[i][j]=2;
         var color = "red";
+        //color = colors[numWalls%colors.length];
+        //numWalls++;
         if (del) {
             color = "white";
         }
@@ -221,5 +247,76 @@ angular.module('myApp.view1', ['ngRoute'])
             });
         }
     }
+    
+    document.onkeydown=function(e){
+        /*
+        'v': Build vertical walls;
+        'h': Build horizontal walls;
+        'd': Delete the first wall;
+        'e': Delete the last wall;
+        arrow keys for prey
+        */
+        console.log(e.keyCode);
+        var actionH = null, actionP = null;
+        switch (e.keyCode) {
+            case 86: actionH = {
+                        command:"B",
+                        wall: {
+                            direction:"V"
+                        }
+                    }
+                break;
+            case 72: actionH = {
+                        command:"B",
+                        wall: {
+                            direction:"H"
+                        }
+                    }
+                break;
+            case 68: actionH = {
+                        command:"D",
+                        wallIds: [0]
+                    }
+                break;
+            case 69: actionH = {
+                        command:"D",
+                        wallIds: [1]
+                    }
+                break;
+            case 37: actionP = {
+                        command:"M",
+                        direction:"W"
+                    }
+                break;
+            case 38: actionP = {
+                        command:"M",
+                        direction:"N"
+                    }
+                break;
+            case 39: actionP = {
+                        command:"M",
+                        direction:"E"
+                    }
+                break;
+            case 40: actionP = {
+                        command:"M",
+                        direction:"S"
+                    }
+                break;
+        }
+        if (actionH != null) {
+            socketH.send(JSON.stringify(actionH));
+        }
+        if (actionP != null) {
+            socketP.send(JSON.stringify(actionP));
+        }
+        
+        
+        
+        //changeKey((e||window.event).keyCode, 1);
+    };
+    document.onkeyup=function(e){
+        //changeKey((e||window.event).keyCode, 0);
+    };
 
 }]);

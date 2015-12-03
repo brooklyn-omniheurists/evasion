@@ -1,0 +1,8 @@
+Create API Documentation
+UI
+Random Client in Java
+Linux file to run code
+Check for Number Wall and Time Between wall Creation
+Error in JSON response for bad builds, deletes, bad moves
+Build and Delete in Same Move
+Give Walls Unique Identifiers for Delete
