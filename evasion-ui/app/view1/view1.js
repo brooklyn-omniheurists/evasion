@@ -29,6 +29,14 @@ angular.module('myApp.view1', ['ngRoute'])
             window.alert("Hunter Won! Took " + turn.time);
             gameRunning = false;
         }
+        if (turn.hunterTimedOut && gameRunning) {
+            window.alert("Awww hunter timed out! Prey survived " + turn.time);
+            gameRunning = false;
+        }
+        if (turn.preyTimedOut && gameRunning) {
+            window.alert("Awww prey timed out! Prey survived " + turn.time);
+            gameRunning = false;
+        }
         playerPos = [ turn.hunter[0], turn.hunter[1] ];
         playerPos2 = [ turn.prey[0], turn.prey[1] ];
         for (var i = 0; i < turn.walls.length; i++) {
