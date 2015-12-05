@@ -1,5 +1,6 @@
-diagnol move for prey
-button for moving without wall
+move button press to moustrap
+    diagnol move for prey
+    button for moving without wall
 showing errors
 color walls and number
 removing queue and indicator saying hunter turn prey turn

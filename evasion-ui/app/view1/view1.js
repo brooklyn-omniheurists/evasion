@@ -94,6 +94,11 @@ angular.module('myApp.view1', ['ngRoute'])
 	$scope.$apply();
         drawCanvas();
     }
+    
+    $scope.colors = randomColor({
+                   count: 10
+                });
+    $scope.existingColors = [];
 
     function vertWall (wall) {//(oldX,oldY,dir,length,del) {
 	/*if (dir == "N") {
@@ -106,11 +111,15 @@ angular.module('myApp.view1', ['ngRoute'])
             var oldX = wall.position[0];
             var oldY = wall.position[1];
             var finalX = oldX;
-            var finalY = oldY + wall.length;
+            var finalY = oldY + wall.length*UNIT_SIZE;
             var tempP = map.path('M' + oldX + ',' + oldY + ' L' + finalX + ',' + finalY);
+            tempP.attr({
+                "stroke": $scope.colors[wall.id%$scope.colors.length]
+            });
             tempP.build = 0;
             tempP.id = wall.id;
             walls.push(tempP);
+            $scope.existingColors.push({id:wall.id%$scope.colors.length, color:$scope.colors[wall.id%$scope.colors.length]})
             /*
             for (var i = oldX, j=oldY; j <= oldY+length; j++) {
                 drawWall(i,j,del);
@@ -122,7 +131,7 @@ angular.module('myApp.view1', ['ngRoute'])
         if (wall.direction == "E") {
             var oldX = wall.position[0];
             var oldY = wall.position[1];
-            var finalX = oldX + wall.length;
+            var finalX = oldX + wall.length*UNIT_SIZE;
             var finalY = oldY;
             var tempP = map.path('M' + oldX + ',' + oldY + ' L' + finalX + ',' + finalY);
             tempP.build = 0;
@@ -141,7 +150,7 @@ angular.module('myApp.view1', ['ngRoute'])
     }
 
     var arenaSize = 300;
-    var UNIT_SIZE = 1;
+    var UNIT_SIZE = 1.5;
     var playerDir=pi/4;
     var samples=200;
     var pi=Math.PI;
@@ -168,19 +177,25 @@ angular.module('myApp.view1', ['ngRoute'])
             colors.push(c);
         }
     }
-    createDistinctColors();
-    var numWalls = 0;*/
+    createDistinctColors();*/
+    /*var numWalls = 0;
+    var colors = randomColor({
+                   count: 10,
+                   hue: 'green'
+                });
     
     function drawWall(i, j, del) {
         //arena[i][j]=2;
         var color = "red";
-        //color = colors[numWalls%colors.length];
-        //numWalls++;
+        color = colors[numWalls%colors.length];
+        numWalls++;
         if (del) {
             color = "white";
         }
+        console.log("TEST");
+        console.log(color);
         var wallUnit = map.rect(i*UNIT_SIZE,j*UNIT_SIZE,UNIT_SIZE,UNIT_SIZE).attr({fill:color, stroke:color});
-    }
+    }*/
 
     $scope.arenaSize=arenaSize;
     $scope.UNIT_SIZE = UNIT_SIZE;
