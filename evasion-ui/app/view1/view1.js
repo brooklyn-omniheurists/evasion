@@ -661,6 +661,7 @@ function sendPreyCommand(dir){
     var mapball2 = null;
 
     var theMap = document.getElementById("map");
+    var log = document.getElementById('text_area');
     var dimension = arenaSize*UNIT_SIZE;
     var map=Raphael(theMap,dimension,dimension);
     var arena=initArena(arenaSize,arenaSize);
