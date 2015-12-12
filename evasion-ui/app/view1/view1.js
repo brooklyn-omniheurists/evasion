@@ -471,6 +471,114 @@ function wallEquals(id, wall) {
 
 
 
+var left_key_down = false;
+var right_key_down = false;
+var up_key_down = false;
+var down_key_down = false;
+var direction;
+var prey_direction = null;
+var block_send = false;
+
+Mousetrap.bind('up', function() {
+  if(down_key_down === true)
+    direction = direction || "DO NOTHING";
+  if(left_key_down === true)
+    direction = direction || cardinalDirections.NW;
+  if(right_key_down === true)
+    direction = direction || cardinalDirections.NE;
+  up_key_down = true;
+}, 'keydown');
+Mousetrap.bind('up', function() {
+  up_key_down = false;
+  direction = direction || cardinalDirections.N;
+  sendPreyCommand(direction);
+}, 'keyup');
+
+Mousetrap.bind('down', function() {
+  if(up_key_down === true)
+    direction = direction || "DO NOTHING";
+  if(left_key_down === true)
+    direction = direction || cardinalDirections.SW;
+  if(right_key_down === true)
+    direction = direction || cardinalDirections.SE;
+  down_key_down = true
+}, 'keydown');
+Mousetrap.bind('down', function() {
+  down_key_down = false;
+  direction = direction || cardinalDirections.S;
+  sendPreyCommand(direction);
+}, 'keyup');
+
+Mousetrap.bind('left', function() {
+  if(right_key_down === true)
+    direction = direction || "DO NOTHING";
+  if(up_key_down === true)
+    direction = direction || cardinalDirections.NW;
+  if(down_key_down === true)
+    direction = direction || cardinalDirections.SW;
+  left_key_down = true;
+}, 'keydown');
+Mousetrap.bind('left', function() {
+  left_key_down = false;
+  direction = direction || cardinalDirections.W;
+  sendPreyCommand(direction);
+}, 'keyup');
+
+Mousetrap.bind('right', function() {
+  if(left_key_down === true)
+    direction = direction || "DO NOTHING";
+  if(up_key_down === true)
+    direction = direction || cardinalDirections.NE;
+  if(down_key_down === true)
+    direction = direction || cardinalDirections.SE;
+  right_key_down = true;
+}, 'keydown');
+Mousetrap.bind('right', function() {
+  right_key_down = false;
+  direction = direction || cardinalDirections.E;
+  sendPreyCommand(direction);
+}, 'keyup');
+
+
+function sendPreyCommand(dir){
+  if(!block_send){
+    // var prey_command = {command:"M"};
+    if(dir !== "DO NOTHING")
+      prey_direction = dir;
+    // socketP.send(JSON.stringify(prey_command));
+  }
+  if(!left_key_down && !right_key_down && !up_key_down && !down_key_down){
+    direction = null;
+    block_send = false;
+  }
+  else
+    block_send = true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
