@@ -28,7 +28,7 @@ angular.module('myApp.view1', ['ngRoute'])
   var WIDTH, HEIGHT, UNIT_SIZE;
   var hunter_pos, prey_pos, hunter_dir, time_since_last_wall;
   var tick = 0;
-  var walls = [];
+  var walls = []; $scope.walls = walls;
   var addend = 1;
   var cardinalDirections = {
       N: [0,-1],
@@ -42,13 +42,14 @@ angular.module('myApp.view1', ['ngRoute'])
   };
   var Wall;
 
-  function Wall(position, length, direction, id) {
+  function Wall(position, length, direction, id, path) {
     return {
       position: position,
       length: length,
       direction: direction,
       id: id,
-      color: "red",
+      path: path
+      //color: "red",
     }
   }
 
@@ -415,6 +416,26 @@ function wallh(){
   return false;
 }
 
+function deleteWallById(currentValue) {
+	var found = false;
+	for (var i = 0; i < walls.length; i++) {
+		if (wallEquals(currentValue,walls[i])) {
+            freeColor(walls[i]);
+            walls[i].path.remove();
+			walls.splice(i,1);
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+        console.log("error");
+	}
+}
+
+function wallEquals(id, wall) {
+	return id == wall.id;
+}
+
 
 
 
@@ -437,31 +458,54 @@ function wallh(){
     var playerPos=[0,0];
     var playerPos2=[230,200];
     var wallIds =  {};
-    var walls = [];
+    //var walls = [];
     var gameRunning = true;
     $scope.SCORE = 0;
 
-    $scope.colors = randomColor({
+    // Drawing walls to be deleted    
+    $scope.colors = [];
+    var rawColors = randomColor({
                    count: 10
                 });
-    $scope.existingColors = [];
-
+    rawColors.forEach(function(item) { $scope.colors.push({color: item, isAvailable: true}) });
+    function useColor(wall) {
+        for (var i = 0; i < $scope.colors.length; i++) {
+            if ($scope.colors[i].isAvailable) {
+                wall.id = i;
+                wall.path.attr({
+                    "stroke": $scope.colors[i].color
+                });
+                $scope.colors[i].isAvailable = false;
+                break;
+            }
+        }
+    }
+    function freeColor(wall) {
+        $scope.colors[wall.id].isAvailable = true;
+    }
+    //$scope.existingColors = [];
+    function bindNumbers () {
+        for (var i = 0; i < 10; i++) {
+            Mousetrap.bind(i.toString(), function(e, i) {
+                deleteWallById(i);
+            }, 'keyup');
+        }
+    }
+    bindNumbers();
+    
     function vertWall (wall) {
         console.log("vertWall");
         if (wall.direction == cardinalDirections.S) {
-            console.log("vertWalsssl");
             var oldX = wall.position[0] * UNIT_SIZE;
             var oldY = wall.position[1] * UNIT_SIZE;
             var finalX = oldX;
             var finalY = oldY + wall.length*UNIT_SIZE;
-            var tempP = map.path('M' + oldX + ',' + oldY + ' L' + finalX + ',' + finalY);
-            // tempP.attr({
-            //     "stroke": $scope.colors[wall.id%$scope.colors.length]
-            // });
-            tempP.build = 0;
-            tempP.id = wall.id;
+            wall.path = map.path('M' + oldX + ',' + oldY + ' L' + finalX + ',' + finalY);
+            useColor(wall);
+            //tempP.build = 0;
+            //tempP.id = wall.id;
             walls.push(wall);
-            $scope.existingColors.push({id:wall.id%$scope.colors.length, color:$scope.colors[wall.id%$scope.colors.length]})
+            //$scope.existingColors.push({id:wall.id%$scope.colors.length, color:$scope.colors[wall.id%$scope.colors.length]})
         }
     }
     function horWall (wall) {
@@ -472,9 +516,10 @@ function wallh(){
             var oldY = wall.position[1] * UNIT_SIZE;
             var finalX = oldX + wall.length*UNIT_SIZE;
             var finalY = oldY;
-            var tempP = map.path('M' + oldX + ',' + oldY + ' L' + finalX + ',' + finalY);
-            tempP.build = 0;
-            tempP.id = wall.id;
+            wall.path  = map.path('M' + oldX + ',' + oldY + ' L' + finalX + ',' + finalY);
+            useColor(wall);
+            //tempP.build = 0;
+            //tempP.id = wall.id;
             walls.push(wall);
         }
     }

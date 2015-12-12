@@ -9,7 +9,7 @@ if (process.argv.length == 3) {
     }
 }
 
-var server = require('websocket').server, http = require('http');
+//var server = require('websocket').server, http = require('http');
 
 var express = require('express'),
 app = express();
@@ -17,7 +17,7 @@ app.set('view engine', 'html');
 app.use(express.static(__dirname));
 
 var webServer = app.listen(8080);
-
+/*
 var socket = new server({
     httpServer: http.createServer().listen(1990)
 });
@@ -126,10 +126,6 @@ var conIdArr = {};
 socket.on('request', function(request) {
     connectionArray.push(request.accept(null, request.origin));
 });
-/*
-socket.on('close', function(request) {
-    connectionArray.push(request.accept(null, request.origin));
-});*/
 
 hunterSocket.on('request', function(request) {
     connection2 = request.accept(null, request.origin);
@@ -751,7 +747,7 @@ function generateHorizontalWall(pos, walls){
   var length = eastPoint[0] - westPoint[0];
   var out = new Wall(westPoint, length, cardinalDirections.E);
   return out;
-}
+}*/
 
 /*
 processHunter({command:"B",wall:{length:2,direction:"S"}});

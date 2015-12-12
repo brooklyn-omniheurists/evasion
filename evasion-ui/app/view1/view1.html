@@ -1,5 +1,5 @@
 <input type="text" ng-model="SCORE"></input>
 <DIV id="map" width="dimension" height="dimension" style="border:solid; border-color:brown"></DIV>
-<ul class="list-group" style="float:right;">
-    <li class="list-group-item" ng-repeat="color in existingColors" style="color:{{color.color}};">{{color.id}}</li>
+<ul class="list-group" style="float:left;">
+    <li class="list-group-item" ng-repeat="wall in walls" style="background-color:{{wall.path.attrs.stroke}};">{{wall.id}}</li>
 </ul>

@@ -33,6 +33,7 @@
   "dependencies": {
     "mousetrap": "~1.5.3",
     "randomcolor": "~0.4.2",
-    "angular-bootstrap": "~0.12.2"
+    "angular-bootstrap": "~0.12.2",
+    "bootstrap": "~3.3.6"
   }
 }
