@@ -368,25 +368,29 @@ angular.module('myApp.view1', ['ngRoute'])
     var error;
     var intersecthunter, intersectprey, intersectwall, squishing;
     intersectwall = isWallIntersecting(newWall, walls);
-    // if(intersectwall){
+    if(intersectwall){
+      appendLog("Wall could not be built, intersects with wall");
     //   error = new EvasionError("Wall could not be built", errorCodes.I_WALL, data);
     //   errorList.push(error);
-    // }
+    }
     intersecthunter = isWallIntersectingHunter(newWall, hunterPos);
-    // if(intersecthunter){
+    if(intersecthunter){
+      appendLog("Wall could not be built, intersects with hunter");
     //   error = new EvasionError("Wall could not be built", errorCodes.I_HUNT, data);
     //   errorList.push(error);
-    // }
+    }
     intersectprey = isWallIntersectingPrey(newWall, preyPos);
-    // if(intersectprey){
+    if(intersectprey){
+      appendLog("Wall could not be built, intersects with prey");
     //   error = new EvasionError("Wall could not be built", errorCodes.I_PREY, data);
     //   errorList.push(error);
-    // }
+    }
     squishing = willWallCauseSquishing(newWall, walls, hunterPos, hunterDir);
-    // if(squishing){
+    if(squishing){
+      appendLog("Wall could not be built, wills squish you");
     //   error = new EvasionError("Wall could not be built", errorCodes.SQUISH, data);
     //   errorList.push(error);
-    // }
+    }
     // console.log(intersectwall , intersecthunter , intersectprey , squishing);
       return !(intersectwall || intersecthunter || intersectprey || squishing);
   };
@@ -406,9 +410,25 @@ angular.module('myApp.view1', ['ngRoute'])
     return n;
   };
 
+  function has_wall_limited_exceeded(){
+    var exceeded =  walls.length >= MAX_WALLS;
+    if(exceeded){
+      appendLog("You've built too many walls. Max is " + MAX_WALLS);
+    }
+    return exceeded;
+  }
+
+  function gotta_wait(){
+    var waiting = tick - time_since_last_wall < COOL_DOWN_TIME;
+    if(waiting){
+      appendLog("Too hasty. Must wait " + COOL_DOWN_TIME + " steps before building a wall.");
+    }
+    return waiting;
+  }
+
   function cant_build_wall(){
-  return walls.length >= MAX_WALLS || tick - time_since_last_wall < COOL_DOWN_TIME
-}
+    return has_wall_limited_exceeded() || gotta_wait();
+  }
 
 function wallv(){
   if(cant_build_wall())
@@ -669,12 +689,31 @@ function sendPreyCommand(dir){
     drawCanvas();
     hunter_dir = cardinalDirections.SE;
 
+    log.style.width = arenaSize * UNIT_SIZE + 6+ "px";
+    log.value = "Welcome.";
+
+    function appendLog(string){
+      var last = log.value;
+      last = last + "\n";
+      log.value = last + string;
+      log.scrollTop = log.scrollHeight;
+    }
 
     function update(){
       var hunter = moveHunter(playerPos, hunter_dir, walls.concat(globalWalls));
+      var won = has_hunter_won(playerPos, playerPos2, walls);
+      if(won){
+        appendLog("Hunter has won! Took " + tick + " steps.");
+        anim_loop = null;
+        return;
+      }
       playerPos = hunter.newPosition;
       hunter_dir = hunter.direction;
       tick = tick + 1;
+      if(tick % 2 === 0 && prey_direction !== null){
+        playerPos2 = movePrey(playerPos2,getCardinalDirection(prey_direction),walls.concat(globalWalls));
+        prey_direction = null;
+      }
       $scope.SCORE = tick;
 	    $scope.$apply();
     }
