@@ -53,6 +53,25 @@ angular.module('myApp.view1', ['ngRoute'])
     }
   }
 
+  function has_hunter_won(hunterPos, preyPos, walls) {
+    var closeEnough, i, len, line2, n, points, sum, wall;
+    sum = 0;
+    n = 0;
+    while (n < hunterPos.length) {
+      sum += Math.pow(hunterPos[n] - preyPos[n], 2);
+      n++;
+    }
+    closeEnough = Math.floor(Math.sqrt(sum)) <= 4;
+    for (i = 0, len = walls.length; i < len; i++) {
+      wall = walls[i];
+      line2 = useCoords(wall);
+      if (line_intersects(hunterPos[0], hunterPos[1], preyPos[0], preyPos[1], line2[0], line2[1], line2[2], line2[3])) {
+        return false;
+      }
+    }
+    return closeEnough;
+  };
+
 
     var leftWall = new Wall([-1, -1], 302, cardinalDirections.S);
     var rightWall = new Wall([301, -1], 302, cardinalDirections.S);
