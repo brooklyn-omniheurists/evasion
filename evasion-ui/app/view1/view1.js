@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('myApp.view1', ['ngRoute'])
+angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/view1', {
@@ -660,6 +660,7 @@ Mousetrap.bind('right', function() {
       var won = has_hunter_won(playerPos, playerPos2, walls);
       if(won){
         appendLog("Hunter has won! Took " + tick + " steps.");
+        document.getElementById("modal").click();
         anim_loop = null;
         return;
       }
@@ -749,3 +750,24 @@ Mousetrap.bind('right', function() {
     Mousetrap.bind('v', wallv);
 
 }]);
+
+angular.module('myApp.view1').controller('ModalDemoCtrl', function ($scope, $uibModal, $log) {
+
+  $scope.open = function () {
+
+    var modalInstance = $uibModal.open({
+      animation: true,
+      templateUrl: 'myModalContent.html',
+      controller: 'ModalInstanceCtrl',
+      size: "md",
+      resolve: {
+        items: function () {}
+      }
+    });
+
+  };
+
+});
+
+
+angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {});
