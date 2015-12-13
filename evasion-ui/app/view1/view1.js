@@ -506,6 +506,7 @@ Mousetrap.bind('up', function() {
   if(right_key_down === true)
     prey_direction = cardinalDirections.NE;
   up_key_down = true;
+  return false;
 }, 'keydown');
 Mousetrap.bind('up', function() {
   up_key_down = false;
@@ -518,6 +519,7 @@ Mousetrap.bind('down', function() {
   if(right_key_down === true)
     prey_direction = cardinalDirections.SE;
   down_key_down = true
+  return false;
 }, 'keydown');
 Mousetrap.bind('down', function() {
   down_key_down = false;
@@ -530,6 +532,7 @@ Mousetrap.bind('left', function() {
   if(down_key_down === true)
     prey_direction = cardinalDirections.SW;
   left_key_down = true;
+  return false;
 }, 'keydown');
 Mousetrap.bind('left', function() {
   left_key_down = false;
@@ -542,6 +545,7 @@ Mousetrap.bind('right', function() {
   if(down_key_down === true)
     prey_direction =  cardinalDirections.SE;
   right_key_down = true;
+  return false;
 }, 'keydown');
 Mousetrap.bind('right', function() {
   right_key_down = false;
