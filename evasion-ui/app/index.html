@@ -30,12 +30,26 @@
   <script src="bower_components/raphael/raphael-min.js" type="text/javascript" charset="utf-8"></script>
   <script src="../node_modules/mousetrap/mousetrap.min.js"></script>
   <script src="../node_modules/randomcolor/randomColor.js"></script>
-    
+
   <script src="app.js"></script>
   <script src="view1/view1.js"></script>
   <script src="view2/view2.js"></script>
   <script src="components/version/version.js"></script>
   <script src="components/version/version-directive.js"></script>
   <script src="components/version/interpolate-filter.js"></script>
+
+  <script src="../node_modules/angular-animate/angular-animate.js"></script>
+  <script src="../node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js"></script>
+
+  <div ng-controller="ModalDemoCtrl">
+      <script type="text/ng-template" id="myModalContent.html">
+
+          <div class="modal-body">
+              <img src="images/win.gif" style="width: 100%;">
+          </div>
+      </script>
+
+      <button type="button" class="btn btn-default" ng-click="open()" style="visibility: hidden;" id="modal"></button>
+  </div>
 </body>
 </html>
