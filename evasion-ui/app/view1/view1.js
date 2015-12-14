@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('myApp.view1', ['ngRoute'])
+angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/view1', {
@@ -500,100 +500,56 @@ var prey_direction = null;
 var block_send = false;
 
 Mousetrap.bind('up', function() {
-  if(down_key_down === true)
-    direction = direction || "DO NOTHING";
+  prey_direction = cardinalDirections.N;
   if(left_key_down === true)
-    direction = direction || cardinalDirections.NW;
+    prey_direction = cardinalDirections.NW;
   if(right_key_down === true)
-    direction = direction || cardinalDirections.NE;
+    prey_direction = cardinalDirections.NE;
   up_key_down = true;
+  return false;
 }, 'keydown');
 Mousetrap.bind('up', function() {
   up_key_down = false;
-  direction = direction || cardinalDirections.N;
-  sendPreyCommand(direction);
 }, 'keyup');
 
 Mousetrap.bind('down', function() {
-  if(up_key_down === true)
-    direction = direction || "DO NOTHING";
+  prey_direction = cardinalDirections.S;
   if(left_key_down === true)
-    direction = direction || cardinalDirections.SW;
+    prey_direction = cardinalDirections.SW;
   if(right_key_down === true)
-    direction = direction || cardinalDirections.SE;
+    prey_direction = cardinalDirections.SE;
   down_key_down = true
+  return false;
 }, 'keydown');
 Mousetrap.bind('down', function() {
   down_key_down = false;
-  direction = direction || cardinalDirections.S;
-  sendPreyCommand(direction);
 }, 'keyup');
 
 Mousetrap.bind('left', function() {
-  if(right_key_down === true)
-    direction = direction || "DO NOTHING";
+  prey_direction = cardinalDirections.W;
   if(up_key_down === true)
-    direction = direction || cardinalDirections.NW;
+    prey_direction =  cardinalDirections.NW;
   if(down_key_down === true)
-    direction = direction || cardinalDirections.SW;
+    prey_direction = cardinalDirections.SW;
   left_key_down = true;
+  return false;
 }, 'keydown');
 Mousetrap.bind('left', function() {
   left_key_down = false;
-  direction = direction || cardinalDirections.W;
-  sendPreyCommand(direction);
 }, 'keyup');
 
 Mousetrap.bind('right', function() {
-  if(left_key_down === true)
-    direction = direction || "DO NOTHING";
+  prey_direction = cardinalDirections.E;
   if(up_key_down === true)
-    direction = direction || cardinalDirections.NE;
+    prey_direction = cardinalDirections.NE;
   if(down_key_down === true)
-    direction = direction || cardinalDirections.SE;
+    prey_direction =  cardinalDirections.SE;
   right_key_down = true;
+  return false;
 }, 'keydown');
 Mousetrap.bind('right', function() {
   right_key_down = false;
-  direction = direction || cardinalDirections.E;
-  sendPreyCommand(direction);
 }, 'keyup');
-
-
-function sendPreyCommand(dir){
-  if(!block_send){
-    // var prey_command = {command:"M"};
-    if(dir !== "DO NOTHING")
-      prey_direction = dir;
-    // socketP.send(JSON.stringify(prey_command));
-  }
-  if(!left_key_down && !right_key_down && !up_key_down && !down_key_down){
-    direction = null;
-    block_send = false;
-  }
-  else
-    block_send = true;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -704,6 +660,7 @@ function sendPreyCommand(dir){
       var won = has_hunter_won(playerPos, playerPos2, walls);
       if(won){
         appendLog("Hunter has won! Took " + tick + " steps.");
+        document.getElementById("modal").click();
         anim_loop = null;
         return;
       }
@@ -793,3 +750,24 @@ function sendPreyCommand(dir){
     Mousetrap.bind('v', wallv);
 
 }]);
+
+angular.module('myApp.view1').controller('ModalDemoCtrl', function ($scope, $uibModal, $log) {
+
+  $scope.open = function () {
+
+    var modalInstance = $uibModal.open({
+      animation: true,
+      templateUrl: 'myModalContent.html',
+      controller: 'ModalInstanceCtrl',
+      size: "md",
+      resolve: {
+        items: function () {}
+      }
+    });
+
+  };
+
+});
+
+
+angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {});

@@ -1,8 +1,7 @@
-move button press to moustrap
-    diagnol move for prey
-    button for moving without wall
-showing errors
-color walls and number
-removing queue and indicator saying hunter turn prey turn
-no move for prey
-page down when clicking down
+Make Game Fit on Screen
+Variable Wall, Cooldown time
+Show Score, Show Highest Scores
+
+Hunter Random, Prey Random
+Choosing Robot or not
+GIF Overlay

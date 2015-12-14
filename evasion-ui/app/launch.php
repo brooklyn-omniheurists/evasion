@@ -6,7 +6,6 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Dr Ecco</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
@@ -14,12 +13,20 @@
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="app.css">
   <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
+
+
+  <title>Dr Ecco</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="../../style.css" media="screen" />
+
 </head>
 <body>
-    <div class="post">
+
+
+  <div class="post">
       <h1 class="title">Evasion V3</h1>
-    </div>
-    <div >
+  </div>
+  <div >
       <div class="instr">
           <p>
           <b>Instructions:</b> <br />
@@ -37,9 +44,16 @@
       <div>
           <b>The object of the game is to ......</b>. The winner is the one who blah blah...
       </div>
-    </div>
-    
-  <div ng-view></div>
+  </div>
+
+  <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+
+  <div ng-view id="gameArea">
+  <!-- In production use:
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
+  -->
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>
   <script src="bower_components/raphael/raphael-min.js" type="text/javascript" charset="utf-8"></script>
@@ -53,32 +67,18 @@
   <script src="components/version/version-directive.js"></script>
   <script src="components/version/interpolate-filter.js"></script>
 
-  <script src="../node_modules/angular-animate/angular-animate.js"></script>
-  <script src="../node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js"></script>
+</div>
 
-  <div ng-controller="ModalDemoCtrl">
-      <script type="text/ng-template" id="myModalContent.html">
+<div class="post" style="position:absolute; top:80%; height:10%">
+<h2 class="title">Last 10 scores</h2>
+<?php
+  // functions.php in case of an opening in the same window
+  // ../../functions.php in case of an opening in a new window
+  include '../../lastScores.php';
+  getScores("EvasionV3");
+?>
+</div>
 
-          <div class="modal-body">
-              <img src="images/win.gif" style="width: 100%;">
-          </div>
-      </script>
 
-      <button type="button" class="btn btn-default" ng-click="open()" style="visibility: hidden;" id="modal"></button>
-  </div>
-<<<<<<< HEAD
-    
-    <div class="post" style="position:absolute; top:80%; height:10%">
-    <h2 class="title">Last 10 scores</h2>
-    <?php
-      // functions.php in case of an opening in the same window
-      // ../../functions.php in case of an opening in a new window
-      include '../../lastScores.php';
-      getScores("EvasionV3");
-    ?>
-    </div>
-
-=======
->>>>>>> c945f9f5be7ad89886593eac890fe545ea46d40a
 </body>
 </html>
