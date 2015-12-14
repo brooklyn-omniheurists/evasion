@@ -587,6 +587,71 @@ Mousetrap.bind('right', function() {
 }, 'keyup');
 
 
+var old_prey_dir = cardinalDirections.NW;
+function computer_prey_direction(){
+  var new_pos = movePrey(playerPos2, old_prey_dir, walls.concat(globalWalls));
+  var break_loop = 0;
+  while(new_pos == playerPos2){
+    switch(old_prey_dir) {
+      case cardinalDirections.NW:
+      case cardinalDirections.N:
+        old_prey_dir = cardinalDirections.W;
+        break;
+      case cardinalDirections.W:
+        old_prey_dir = cardinalDirections.S;
+        break;
+      case cardinalDirections.S:
+        old_prey_dir = cardinalDirections.E;
+        break;
+      case cardinalDirections.E:
+        old_prey_dir = cardinalDirections.N;
+        break;
+    }
+    if(break_loop === 4)
+      return null;
+    break_loop += 1;
+    new_pos = movePrey(playerPos2, old_prey_dir, walls.concat(globalWalls));
+  }
+  return old_prey_dir;
+}
+
+function hunter_is_one_north_of_prey()  { return playerPos[1] == (playerPos2[1] - 1); }
+function hunter_is_moving_in_northward_direction() { return hunter_dir[1] == 1;  }
+function hunter_is_flanking_from_north()  { return hunter_is_one_north_of_prey() && hunter_is_moving_in_northward_direction(); }
+
+function hunter_is_one_south_of_prey()  { return playerPos[1] == (playerPos2[1] + 1);}
+function hunter_is_moving_in_southward_direction() {return hunter_dir[1] == -1;}
+function hunter_is_flanking_from_south()  {return hunter_is_one_south_of_prey() && hunter_is_moving_in_southward_direction();}
+
+function hunter_is_closing_in_on_prey_vertically(){ return hunter_is_flanking_from_north() || hunter_is_flanking_from_south();}
+
+
+function hunter_is_one_west_of_prey() { return playerPos[0] == (playerPos2[0] - 1);}
+function hunter_is_moving_in_westward_direction()  { return hunter_dir[0] == 1;}
+function hunter_is_flanking_from_west() { return hunter_is_one_west_of_prey() && hunter_is_moving_in_westward_direction();}
+
+function hunter_is_one_east_of_prey()  { return playerPos[0] == (playerPos2[0] + 1); }
+function hunter_is_moving_in_eastward_direction() { return hunter_dir[0] == -1;  }
+function hunter_is_flanking_from_east()  { return hunter_is_one_east_of_prey() && hunter_is_moving_in_eastward_direction(); }
+
+
+function hunter_is_closing_in_on_prey_horizontally()  { return hunter_is_flanking_from_west() || hunter_is_flanking_from_east();}
+
+function computer_hunter_decision(){
+  var dir;
+  if(walls.length == 0)
+    dir = cardinalDirections.N;
+  else
+    dir = getCardinalDirection(walls[walls.length-1].direction);
+
+  if(dir == cardinalDirections.E) {
+    if(hunter_is_closing_in_on_prey_horizontally())
+      wallv();
+  } else {
+    if(hunter_is_closing_in_on_prey_vertically())
+      wallh();
+  }
+}
 
 
 
