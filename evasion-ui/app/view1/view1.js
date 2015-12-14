@@ -702,6 +702,12 @@ Mousetrap.bind('right', function() {
       playerPos = hunter.newPosition;
       hunter_dir = hunter.direction;
       tick = tick + 1;
+
+      if(!$scope.human_hunter)
+        computer_hunter_decision();
+      if(!$scope.human_prey)
+        prey_direction = computer_prey_direction();
+
       if(tick % 2 === 0 && prey_direction !== null){
         playerPos2 = movePrey(playerPos2,getCardinalDirection(prey_direction),walls.concat(globalWalls));
         prey_direction = null;
