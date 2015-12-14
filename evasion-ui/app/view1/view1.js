@@ -782,8 +782,14 @@ Mousetrap.bind('right', function() {
         }
     }
 
-    Mousetrap.bind('h', wallh);
-    Mousetrap.bind('v', wallv);
+    Mousetrap.bind('h', function(){
+      if($scope.human_hunter && $scope.started)
+        wallh();
+      });
+    Mousetrap.bind('v', function(){
+      if($scope.human_hunter && $scope.started)
+        wallv();
+      });
 
 }]);
 
