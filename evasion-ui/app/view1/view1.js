@@ -13,7 +13,8 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
 
   $scope.items = ['Human vs Human', 'Human vs Computer', 'Computer vs Human'];
 
-  $scope.selected = 'Human vs Human';
+  $scope.human_hunter = true;
+  $scope.human_prey = true;
   $scope.started = false;
 
 
@@ -35,8 +36,11 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
 
 
     modalInstance.result.then(function (selectedItem) {
-      $scope.selected = selectedItem[0];
-      $scope.started = selectedItem[1];
+      if(selectedItem === $scope.items[1])
+        $scope.human_prey = false;
+      if(selectedItem === $scope.items[2])
+        $scope.human_hunter = false;
+      $scope.started = true;
     }, function (str) {
       $scope.started = true;
     });
@@ -824,8 +828,7 @@ angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, 
   console.log($uibModalInstance);
 
   $scope.ok = function () {
-    $scope.thing = [$scope.selected.item, true]
-    $uibModalInstance.close($scope.thing);
+    $uibModalInstance.close($scope.selected.item);
   };
 
   $scope.cancel = function () {
