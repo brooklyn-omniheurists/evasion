@@ -1,4 +1,32 @@
 <input type="text" ng-model="SCORE"></input>
+
+<script src="../../node_modules/angular-animate/angular-animate.js"></script>
+<script src="../../node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js"></script>
+
+  <div>
+      <script type="text/ng-template" id="myModalContent.html">
+          <div class="modal-header">
+              <h3 class="modal-title">Choose your opponent</h3>
+          </div>
+          <div class="modal-body">
+              <ul>
+                  <li ng-repeat="item in items">
+                      <a href="#" ng-click="$event.preventDefault(); selected.item = item">{{ item }}</a>
+                  </li>
+              </ul>
+              Selected: <b>{{ selected.item }}</b>
+          </div>
+          <div class="modal-footer">
+              <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+              <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+          </div>
+      </script>
+
+      <button type="hidden" id="start_button" ng-click="open()" style="visibility: hidden;">Open me!</button>
+  </div>
+
+
+
 <DIV id="map" width="dimension" height="dimension" style="border:solid; border-color:brown"></DIV>
 <div style="top: {{dimension + 6}}px; position: absolute; left: 40px" >
     <textarea  id="text_area" rows="4" cols="50" readonly></textarea>
