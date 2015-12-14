@@ -761,7 +761,7 @@ function computer_hunter_decision(){
       if(won){
         appendLog("Hunter has won! Took " + tick + " steps.");
         document.getElementById("modal").click();
-        anim_loop = null;
+        $scope.started = false;
         return;
       }
       playerPos = hunter.newPosition;
