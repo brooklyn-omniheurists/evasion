@@ -11,7 +11,7 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
 
 .controller('View1Ctrl', ['$scope','$uibModal',function($scope,$uibModal, $log) {
 
-  $scope.items = ['Human vs Human', 'Human vs Computer', 'Computer vs Human'];
+  $scope.items = ['Human vs Human', 'Human vs Robutt', 'Robutt vs Human'];
 
   $scope.human_hunter = true;
   $scope.human_prey = true;
@@ -588,7 +588,7 @@ Mousetrap.bind('right', function() {
 
 
 var old_prey_dir = cardinalDirections.NW;
-function computer_prey_direction(){
+function robutt_prey_direction(){
   var new_pos = movePrey(playerPos2, old_prey_dir, walls.concat(globalWalls));
   var break_loop = 0;
   while(new_pos == playerPos2){
@@ -637,7 +637,7 @@ function hunter_is_flanking_from_east()  { return hunter_is_one_east_of_prey() &
 
 function hunter_is_closing_in_on_prey_horizontally()  { return hunter_is_flanking_from_west() || hunter_is_flanking_from_east();}
 
-function computer_hunter_decision(){
+function robutt_hunter_decision(){
   var dir;
   if(walls.length == 0)
     dir = cardinalDirections.N;
@@ -769,9 +769,9 @@ function computer_hunter_decision(){
       tick = tick + 1;
 
       if(!$scope.human_hunter)
-        computer_hunter_decision();
+        robutt_hunter_decision();
       if(!$scope.human_prey)
-        prey_direction = computer_prey_direction();
+        prey_direction = robutt_prey_direction();
 
       if(tick % 2 === 0 && prey_direction !== null){
         playerPos2 = movePrey(playerPos2,getCardinalDirection(prey_direction),walls.concat(globalWalls));
