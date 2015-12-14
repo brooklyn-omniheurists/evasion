@@ -9,7 +9,38 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   });
 }])
 
-.controller('View1Ctrl', ['$scope',function($scope) {
+.controller('View1Ctrl', ['$scope','$uibModal',function($scope,$uibModal, $log) {
+
+  $scope.items = ['Human vs Human', 'Human vs Computer', 'Computer vs Human'];
+
+  $scope.selected = 'Human vs Human';
+  $scope.started = false;
+
+
+
+  $scope.open = function (size) {
+
+    var modalInstance = $uibModal.open({
+      animation: true,
+      templateUrl: 'myModalContent.html',
+      controller: 'ModalInstanceCtrl',
+      size: size,
+      resolve: {
+        items: function () {
+          return $scope.items;
+        }
+      }
+    });
+
+
+
+    modalInstance.result.then(function (selectedItem) {
+      $scope.selected = selectedItem[0];
+      $scope.started = selectedItem[1];
+    }, function (str) {
+      $scope.started = true;
+    });
+  };
 
   window.requestAnimFrame = (function(callback){
   return window.requestAnimationFrame ||
@@ -770,4 +801,34 @@ angular.module('myApp.view1').controller('ModalDemoCtrl', function ($scope, $uib
 });
 
 
-angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {});
+angular.module('myApp.view1').controller('WinnerModalInstanceCtrl', function ($scope, $uibModalInstance, items) {});
+
+
+angular.module('myApp.view1').controller('ModalStartCtrl', function ($scope, $uibModal, $log) {
+
+
+
+
+});
+
+// Please note that $modalInstance represents a modal window (instance) dependency.
+// It is not the same as the $uibModal service used above.
+
+angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {
+
+  $scope.items = items;
+  $scope.selected = {
+    item: $scope.items[0]
+  };
+  console.log($uibModalInstance);
+
+  $scope.ok = function () {
+    $scope.thing = [$scope.selected.item, true]
+    $uibModalInstance.close($scope.thing);
+  };
+
+  $scope.cancel = function () {
+    $scope.thing  = true;
+    $uibModalInstance.dismiss($scope.thing);
+  };
+});
