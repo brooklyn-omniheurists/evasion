@@ -813,9 +813,10 @@ function computer_hunter_decision(){
         }
 
         var anim_loop = (function() {
-          if($scope.started)
+          if($scope.started){
             update();
-          drawCanvas();
+            drawCanvas();
+          }
           requestAnimFrame(anim_loop);
         });
         requestAnimFrame(anim_loop);
