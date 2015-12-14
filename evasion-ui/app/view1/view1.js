@@ -8,8 +8,39 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
     controller: 'View1Ctrl'
   });
 }])
+.controller('View1Ctrl', ['$scope','$uibModal','$rootScope','$log',function($scope,$uibModal,$rootScope,$log) {
 
-.controller('View1Ctrl', ['$scope','$rootScope',function($scope,$rootScope) {
+  $scope.items = ['Human vs Human', 'Human vs Robutt', 'Robutt vs Human'];
+
+  $scope.human_hunter = true;
+  $scope.human_prey = true;
+  $scope.started = false;
+    
+  $scope.open = function (size) {
+
+    var modalInstance = $uibModal.open({
+      animation: true,
+      templateUrl: 'myModalContent.html',
+      controller: 'ModalInstanceCtrl',
+      size: size,
+      resolve: {
+        items: function () {
+          return $scope.items;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (selectedItem) {
+      if(selectedItem === $scope.items[1])
+        $scope.human_prey = false;
+      if(selectedItem === $scope.items[2])
+        $scope.human_hunter = false;
+      $scope.started = true;
+    }, function (str) {
+      $scope.started = true;
+    });
+  };
+
     $scope.postScore = function (ws, wr) {
       if (!wr || wr == "")
         wr = 'guest';
@@ -424,7 +455,7 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   }
 
   function gotta_wait(){
-    var waiting = tick - time_since_last_wall < COOL_DOWN_TIME;
+    var waiting = (tick - time_since_last_wall) < COOL_DOWN_TIME;
     if(waiting){
       appendLog("Too hasty. Must wait " + COOL_DOWN_TIME + " steps before building a wall.");
     }
@@ -557,6 +588,71 @@ Mousetrap.bind('right', function() {
 }, 'keyup');
 
 
+var old_prey_dir = cardinalDirections.NW;
+function robutt_prey_direction(){
+  var new_pos = movePrey(playerPos2, old_prey_dir, walls.concat(globalWalls));
+  var break_loop = 0;
+  while(new_pos == playerPos2){
+    switch(old_prey_dir) {
+      case cardinalDirections.NW:
+      case cardinalDirections.N:
+        old_prey_dir = cardinalDirections.W;
+        break;
+      case cardinalDirections.W:
+        old_prey_dir = cardinalDirections.S;
+        break;
+      case cardinalDirections.S:
+        old_prey_dir = cardinalDirections.E;
+        break;
+      case cardinalDirections.E:
+        old_prey_dir = cardinalDirections.N;
+        break;
+    }
+    if(break_loop === 4)
+      return null;
+    break_loop += 1;
+    new_pos = movePrey(playerPos2, old_prey_dir, walls.concat(globalWalls));
+  }
+  return old_prey_dir;
+}
+
+function hunter_is_one_north_of_prey()  { return playerPos[1] == (playerPos2[1] - 1); }
+function hunter_is_moving_in_northward_direction() { return hunter_dir[1] == 1;  }
+function hunter_is_flanking_from_north()  { return hunter_is_one_north_of_prey() && hunter_is_moving_in_northward_direction(); }
+
+function hunter_is_one_south_of_prey()  { return playerPos[1] == (playerPos2[1] + 1);}
+function hunter_is_moving_in_southward_direction() {return hunter_dir[1] == -1;}
+function hunter_is_flanking_from_south()  {return hunter_is_one_south_of_prey() && hunter_is_moving_in_southward_direction();}
+
+function hunter_is_closing_in_on_prey_vertically(){ return hunter_is_flanking_from_north() || hunter_is_flanking_from_south();}
+
+
+function hunter_is_one_west_of_prey() { return playerPos[0] == (playerPos2[0] - 1);}
+function hunter_is_moving_in_westward_direction()  { return hunter_dir[0] == 1;}
+function hunter_is_flanking_from_west() { return hunter_is_one_west_of_prey() && hunter_is_moving_in_westward_direction();}
+
+function hunter_is_one_east_of_prey()  { return playerPos[0] == (playerPos2[0] + 1); }
+function hunter_is_moving_in_eastward_direction() { return hunter_dir[0] == -1;  }
+function hunter_is_flanking_from_east()  { return hunter_is_one_east_of_prey() && hunter_is_moving_in_eastward_direction(); }
+
+
+function hunter_is_closing_in_on_prey_horizontally()  { return hunter_is_flanking_from_west() || hunter_is_flanking_from_east();}
+
+function robutt_hunter_decision(){
+  var dir;
+  if(walls.length == 0)
+    dir = cardinalDirections.N;
+  else
+    dir = getCardinalDirection(walls[walls.length-1].direction);
+
+  if(dir == cardinalDirections.E) {
+    if(hunter_is_closing_in_on_prey_horizontally())
+      wallv();
+  } else {
+    if(hunter_is_closing_in_on_prey_vertically())
+      wallh();
+  }
+}
 
 
 
@@ -666,12 +762,18 @@ Mousetrap.bind('right', function() {
       if(won){
         appendLog("Hunter has won! Took " + tick + " steps.");
         document.getElementById("modal").click();
-        anim_loop = null;
+        $scope.started = false;
         return;
       }
       playerPos = hunter.newPosition;
       hunter_dir = hunter.direction;
       tick = tick + 1;
+
+      if(!$scope.human_hunter)
+        robutt_hunter_decision();
+      if(!$scope.human_prey)
+        prey_direction = robutt_prey_direction();
+
       if(tick % 2 === 0 && prey_direction !== null){
         playerPos2 = movePrey(playerPos2,getCardinalDirection(prey_direction),walls.concat(globalWalls));
         prey_direction = null;
@@ -712,8 +814,10 @@ Mousetrap.bind('right', function() {
         }
 
         var anim_loop = (function() {
-          update();
-          drawCanvas();
+          if($scope.started){
+            update();
+            drawCanvas();
+          }
           requestAnimFrame(anim_loop);
         });
         requestAnimFrame(anim_loop);
@@ -751,8 +855,14 @@ Mousetrap.bind('right', function() {
         }
     }
 
-    Mousetrap.bind('h', wallh);
-    Mousetrap.bind('v', wallv);
+    Mousetrap.bind('h', function(){
+      if($scope.human_hunter && $scope.started)
+        wallh();
+      });
+    Mousetrap.bind('v', function(){
+      if($scope.human_hunter && $scope.started)
+        wallv();
+      });
 
 }]);
 
@@ -762,8 +872,8 @@ angular.module('myApp.view1').controller('ModalDemoCtrl', function ($scope, $uib
 
     var modalInstance = $uibModal.open({
       animation: true,
-      templateUrl: 'myModalContent.html',
-      controller: 'ModalInstanceCtrl',
+      templateUrl: 'winner_modal.html',
+      controller: 'WinnerModalInstanceCtrl',
       size: "md",
       resolve: {
         items: function () {}
@@ -775,4 +885,33 @@ angular.module('myApp.view1').controller('ModalDemoCtrl', function ($scope, $uib
 });
 
 
-angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {});
+angular.module('myApp.view1').controller('WinnerModalInstanceCtrl', function ($scope, $uibModalInstance, items) {});
+
+
+angular.module('myApp.view1').controller('ModalStartCtrl', function ($scope, $uibModal, $log) {
+
+
+
+
+});
+
+// Please note that $modalInstance represents a modal window (instance) dependency.
+// It is not the same as the $uibModal service used above.
+
+angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {
+
+  $scope.items = items;
+  $scope.selected = {
+    item: $scope.items[0]
+  };
+  console.log($uibModalInstance);
+
+  $scope.ok = function () {
+    $uibModalInstance.close($scope.selected.item);
+  };
+
+  $scope.cancel = function () {
+    $scope.thing  = true;
+    $uibModalInstance.dismiss($scope.thing);
+  };
+});

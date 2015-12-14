@@ -2,6 +2,6 @@ Make Game Fit on Screen
 Variable Wall, Cooldown time
 Show Score, Show Highest Scores
 
-Hunter Random, Prey Random
-Choosing Robot or not
-GIF Overlay
+Hunter Random, Prey Random  - KILLED
+Choosing Robot or not       - DOUBLE KILL
+GIF Overlay                 - OVERKILL!!!
