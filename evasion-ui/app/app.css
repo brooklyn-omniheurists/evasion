@@ -46,7 +46,7 @@ BODY {
     left: 220px;
     border: 2px solid #333;
 }
-#canvas {
+/*#canvas {
     position: absolute;
     top: 0;
     left: 0;
@@ -75,5 +75,5 @@ A {
 }
 A:hover {
     color: lime;
-}
+}*/
 

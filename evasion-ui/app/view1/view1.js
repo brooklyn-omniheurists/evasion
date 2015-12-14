@@ -8,17 +8,14 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
     controller: 'View1Ctrl'
   });
 }])
-
-.controller('View1Ctrl', ['$scope','$uibModal',function($scope,$uibModal, $log) {
+.controller('View1Ctrl', ['$scope','$uibModal','$rootScope','$log',function($scope,$uibModal,$rootScope,$log) {
 
   $scope.items = ['Human vs Human', 'Human vs Robutt', 'Robutt vs Human'];
 
   $scope.human_hunter = true;
   $scope.human_prey = true;
   $scope.started = false;
-
-
-
+    
   $scope.open = function (size) {
 
     var modalInstance = $uibModal.open({
@@ -33,8 +30,6 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
       }
     });
 
-
-
     modalInstance.result.then(function (selectedItem) {
       if(selectedItem === $scope.items[1])
         $scope.human_prey = false;
@@ -46,6 +41,12 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
     });
   };
 
+    $scope.postScore = function (ws, wr) {
+      if (!wr || wr == "")
+        wr = 'guest';
+        document.location.href="/drecco/index.php?task=EvasionV3&winner="+wr+"&ws="+ws;
+    }
+    
   window.requestAnimFrame = (function(callback){
   return window.requestAnimationFrame ||
   window.webkitRequestAnimationFrame ||
@@ -663,7 +664,7 @@ function robutt_hunter_decision(){
     var wallIds =  {};
     //var walls = [];
     var gameRunning = true;
-    $scope.SCORE = 0;
+    $rootScope.SCORE = 0;
 
     // Drawing walls to be deleted    
     $scope.colors = [];
@@ -728,7 +729,7 @@ function robutt_hunter_decision(){
     }
 
     var arenaSize = 300;
-    var UNIT_SIZE = 1.5;
+    var UNIT_SIZE = 1;
     var playerDir=pi/4;
     var samples=200;
     var pi=Math.PI;
@@ -777,7 +778,7 @@ function robutt_hunter_decision(){
         playerPos2 = movePrey(playerPos2,getCardinalDirection(prey_direction),walls.concat(globalWalls));
         prey_direction = null;
       }
-      $scope.SCORE = tick;
+      $rootScope.SCORE = tick;
 	    $scope.$apply();
     }
 
@@ -826,7 +827,7 @@ function robutt_hunter_decision(){
     function initUnderMap(){
         var ulen = arena.length;
         var uwid = arena[0].length;
-        map.rect(0,0, uwid*UNIT_SIZE, ulen*UNIT_SIZE).attr({fill:"#FFF", stroke:"#fff"});
+        map.rect(0,0, uwid*UNIT_SIZE, ulen*UNIT_SIZE).attr({fill:"#000", stroke:"brown"});
         for (var i=0; i<uwid; i++) {
             for (var j=0; j<ulen; j++) {
                 var i8 = i*UNIT_SIZE;
