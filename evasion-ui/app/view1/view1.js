@@ -454,7 +454,7 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   }
 
   function gotta_wait(){
-    var waiting = tick - time_since_last_wall < COOL_DOWN_TIME;
+    var waiting = (tick - time_since_last_wall) < COOL_DOWN_TIME;
     if(waiting){
       appendLog("Too hasty. Must wait " + COOL_DOWN_TIME + " steps before building a wall.");
     }
