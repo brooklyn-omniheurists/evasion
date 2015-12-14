@@ -1,8 +1,15 @@
 <input type="text" ng-model="SCORE"></input>
-<DIV id="map" width="dimension" height="dimension" style="border:solid; border-color:brown"></DIV>
-<div style="top: {{dimension + 6}}px; position: absolute; left: 40px" >
+<div class="row"> 
+<div class="col-md-4">
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="wall in walls" style="background-color:{{wall.path.attrs.stroke}};">{{wall.id}}</li>
+    </ul>
+</div>
+
+<DIV id="map" class="col-md-6" width="dimension" height="dimension" style="border:solid; border-color:brown"></DIV>
+    
+</div>
+
+<div>
     <textarea  id="text_area" rows="4" cols="50" readonly></textarea>
-  </div>
-<ul class="list-group" style="float:left;">
-    <li class="list-group-item" ng-repeat="wall in walls" style="background-color:{{wall.path.attrs.stroke}};">{{wall.id}}</li>
-</ul>
+</div>
