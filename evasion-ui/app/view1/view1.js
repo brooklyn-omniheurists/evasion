@@ -757,8 +757,8 @@ angular.module('myApp.view1').controller('ModalDemoCtrl', function ($scope, $uib
 
     var modalInstance = $uibModal.open({
       animation: true,
-      templateUrl: 'myModalContent.html',
-      controller: 'ModalInstanceCtrl',
+      templateUrl: 'winner_modal.html',
+      controller: 'WinnerModalInstanceCtrl',
       size: "md",
       resolve: {
         items: function () {}
