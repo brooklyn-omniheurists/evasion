@@ -1,15 +1,27 @@
-<input type="text" ng-model="SCORE"></input>
-<div class="row"> 
-<div class="col-md-4">
-    <ul class="list-group">
-        <li class="list-group-item" ng-repeat="wall in walls" style="background-color:{{wall.path.attrs.stroke}};">{{wall.id}}</li>
-    </ul>
+
+<div class="container">
+   
+
+<div class="row">
+
+    <div class="col-md-6 col-xs-6">
+        <DIV id="map" max-width="dimension" height="dimension"></DIV>
+    </div>
+    <div class="col-md-4 col-xs-4">
+        <textarea id="text_area" rows="4" cols="50" readonly></textarea>
+    <input type="text" ng-model="SCORE" readonly></input>
+    <button id="score" ng-click="postScore(SCORE, 'Amir')" type="button">Save Score</button>
+    <button id="reset" type="button">Reset</button>
+    </div>
+     <div class="col-md-2 col-xs-2">
+        <ul>
+            <li class="list-group-item" ng-repeat="wall in walls" style="background-color:{{wall.path.attrs.stroke}}; font-weight:bold; font-size:1.5em"h>{{wall.id}}</li>
+        </ul>
+    </div>h
 </div>
 
-<DIV id="map" class="col-md-6" width="dimension" height="dimension" style="border:solid; border-color:brown"></DIV>
-    
 </div>
 
-<div>
-    <textarea  id="text_area" rows="4" cols="50" readonly></textarea>
-</div>
+
+
+

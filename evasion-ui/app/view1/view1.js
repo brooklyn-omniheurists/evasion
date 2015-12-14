@@ -9,8 +9,13 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   });
 }])
 
-.controller('View1Ctrl', ['$scope',function($scope) {
-
+.controller('View1Ctrl', ['$scope','$rootScope',function($scope,$rootScope) {
+    $scope.postScore = function (ws, wr) {
+      if (!wr || wr == "")
+        wr = 'guest';
+        document.location.href="/drecco/index.php?task=EvasionV3&winner="+wr+"&ws="+ws;
+    }
+    
   window.requestAnimFrame = (function(callback){
   return window.requestAnimationFrame ||
   window.webkitRequestAnimationFrame ||
@@ -563,7 +568,7 @@ Mousetrap.bind('right', function() {
     var wallIds =  {};
     //var walls = [];
     var gameRunning = true;
-    $scope.SCORE = 0;
+    $rootScope.SCORE = 0;
 
     // Drawing walls to be deleted    
     $scope.colors = [];
@@ -628,7 +633,7 @@ Mousetrap.bind('right', function() {
     }
 
     var arenaSize = 300;
-    var UNIT_SIZE = 1.5;
+    var UNIT_SIZE = 1;
     var playerDir=pi/4;
     var samples=200;
     var pi=Math.PI;
@@ -671,7 +676,7 @@ Mousetrap.bind('right', function() {
         playerPos2 = movePrey(playerPos2,getCardinalDirection(prey_direction),walls.concat(globalWalls));
         prey_direction = null;
       }
-      $scope.SCORE = tick;
+      $rootScope.SCORE = tick;
 	    $scope.$apply();
     }
 
@@ -718,7 +723,7 @@ Mousetrap.bind('right', function() {
     function initUnderMap(){
         var ulen = arena.length;
         var uwid = arena[0].length;
-        map.rect(0,0, uwid*UNIT_SIZE, ulen*UNIT_SIZE).attr({fill:"#FFF", stroke:"#fff"});
+        map.rect(0,0, uwid*UNIT_SIZE, ulen*UNIT_SIZE).attr({fill:"#000", stroke:"brown"});
         for (var i=0; i<uwid; i++) {
             for (var j=0; j<ulen; j++) {
                 var i8 = i*UNIT_SIZE;
