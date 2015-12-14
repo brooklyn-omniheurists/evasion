@@ -738,7 +738,8 @@ Mousetrap.bind('right', function() {
         }
 
         var anim_loop = (function() {
-          update();
+          if($scope.started)
+            update();
           drawCanvas();
           requestAnimFrame(anim_loop);
         });

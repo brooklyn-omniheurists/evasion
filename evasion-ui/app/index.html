@@ -38,7 +38,7 @@
           <b>The object of the game is to ......</b>. The winner is the one who blah blah...
       </div>
     </div>
-    
+
   <div ng-view></div>
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>
@@ -66,8 +66,7 @@
 
       <button type="button" class="btn btn-default" ng-click="open()" style="visibility: hidden;" id="modal"></button>
   </div>
-<<<<<<< HEAD
-    
+
     <div class="post" style="position:absolute; top:80%; height:10%">
     <h2 class="title">Last 10 scores</h2>
     <?php
@@ -78,7 +77,15 @@
     ?>
     </div>
 
-=======
->>>>>>> c945f9f5be7ad89886593eac890fe545ea46d40a
+
+
+
+  <script>
+    window.onload = function() {
+      window.setTimeout(function(){document.getElementById("start_button").click();}, 1000 );
+    }
+  </script>
+
+
 </body>
 </html>
