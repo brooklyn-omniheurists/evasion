@@ -1,8 +1,10 @@
 Make Game Fit on Screen - Fixed, Could be Better
 Variable Wall, Cooldown time - Finished, need to make reset button
+Restrict number of walls to 10
 Show Score, Show Highest Scores - Incomplete
 Get Current Players Name/Choose to Change Name - Needs to be done
 
 Hunter Random, Prey Random  - KILLED
 Choosing Robot or not       - DOUBLE KILL
 GIF Overlay                 - OVERKILL!!!
+Restricting User Input if Robot is playing
