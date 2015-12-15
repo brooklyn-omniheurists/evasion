@@ -41,9 +41,9 @@
     </div>
     <div class="col-md-4 col-xs-4">
         <textarea id="text_area" rows="4" cols="50" readonly></textarea>
-    <input type="text" ng-model="SCORE" readonly></input>
-    <button id="score" ng-click="postScore(SCORE, 'Amir')" type="button">Save Score</button>
-    <button id="reset" type="button">Reset</button>
+    <input type="text" ng-model="gameValues.score" readonly></input>
+    <button id="score" ng-click="postScore(gameValues.score, 'Amir')" type="button">Save Score</button>
+    <button id="reset" type="button" ng-click="open()">Reset</button>
     </div>
      <div class="col-md-2 col-xs-2">
         <ul>

@@ -11,7 +11,7 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
 .controller('View1Ctrl', ['$scope','$uibModal','$rootScope','$log','constants','gameValues',function($scope,$uibModal,$rootScope,$log,constants,gameValues) {
 
   $scope.items = constants.playerOptions;
-    
+  $scope.gameValues = gameValues;
   $scope.human_hunter = true;
   $scope.human_prey = true;
   $scope.started = false;
@@ -649,12 +649,12 @@ function robutt_hunter_decision(){
 
 
 
-    var playerPos=[0,0];
-    var playerPos2=[230,200];
+    var playerPos=gameValues.playerPos;
+    var playerPos2=gameValues.playerPos2;
     var wallIds =  {};
     //var walls = [];
     var gameRunning = true;
-    $rootScope.SCORE = 0;
+    //gameValues.score = 0;
 
     // Drawing walls to be deleted    
     $scope.colors = [];
@@ -767,7 +767,7 @@ function robutt_hunter_decision(){
         playerPos2 = movePrey(playerPos2,getCardinalDirection(prey_direction),walls.concat(globalWalls));
         prey_direction = null;
       }
-      $rootScope.SCORE = tick;
+      gameValues.score = tick;
 	    $scope.$apply();
     }
 
@@ -888,7 +888,7 @@ angular.module('myApp.view1').controller('ModalStartCtrl', function ($scope, $ui
 // It is not the same as the $uibModal service used above.
 
 angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items, gameValues) {
-    $scope.gameValues = gameValues;
+  $scope.gameValues = gameValues;
   $scope.items = items;
   $scope.selected = {
     item: $scope.items[0]
@@ -896,7 +896,7 @@ angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, 
   //console.log($uibModalInstance);
 
   $scope.ok = function () {
-      console.log(gameValues);
+      $scope.gameValues.score = 0;
       $uibModalInstance.close($scope.selected.item);
   };
 
