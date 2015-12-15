@@ -43,7 +43,7 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
     $scope.open();
 
     $scope.postScore = function (ws) {
-      var wr = gameValue.hunterName;
+      var wr = gameValues.hunterName;
       if (!wr || wr == "") {
         wr = 'guest';
       }
