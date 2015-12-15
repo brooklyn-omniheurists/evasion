@@ -31,15 +31,15 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
     });
 
     modalInstance.result.then(function (selectedItem) {
+      set_default_positions();
       if(selectedItem === $scope.items[1])
         $scope.human_prey = false;
       if(selectedItem === $scope.items[2])
         $scope.human_hunter = false;
       $scope.started = true;
-      set_default_positions();
     }, function (str) {
-      $scope.started = true;
       set_default_positions();
+      $scope.started = true;
     });
   };
     $scope.open();
@@ -84,6 +84,8 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
     old_prey_dir = cardinalDirections.NW;
     time_since_last_wall = -1;
     log.value = "Welcome " + gameValues.hunterName;
+    $scope.human_hunter = true;
+    $scope.prey_hunter = true;
   }
 
   function Wall(position, length, direction, id, path) {
