@@ -503,7 +503,7 @@ function deleteWallById(currentValue) {
 		}
 	}
 	if (!found) {
-        console.log("error");
+        //console.log("error");
 	}
 }
 
@@ -698,7 +698,7 @@ function robutt_hunter_decision(){
     bindNumbers();
     
     function vertWall (wall) {
-        console.log("vertWall");
+        //console.log("vertWall");
         if (wall.direction == cardinalDirections.S) {
             var oldX = wall.position[0] * UNIT_SIZE;
             var oldY = wall.position[1] * UNIT_SIZE;
@@ -713,8 +713,7 @@ function robutt_hunter_decision(){
         }
     }
     function horWall (wall) {
-        console.log("horWall");
-        console.log(wall);
+        //console.log("horWall");
         if (wall.direction == cardinalDirections.E) {
             var oldX = wall.position[0] * UNIT_SIZE;
             var oldY = wall.position[1] * UNIT_SIZE;
@@ -904,7 +903,7 @@ angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, 
   $scope.selected = {
     item: $scope.items[0]
   };
-  console.log($uibModalInstance);
+  //console.log($uibModalInstance);
 
   $scope.ok = function () {
     $uibModalInstance.close($scope.selected.item);

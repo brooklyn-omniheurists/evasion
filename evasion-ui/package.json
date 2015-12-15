@@ -6,12 +6,14 @@
   "repository": "https://github.com/angular/angular-seed",
   "license": "MIT",
   "dependencies": {
-    "angular": "^1.4.8",
+    "angular": "~1.4.8",
     "angular-animate": "^1.4.8",
     "angular-bootstrap": "~0.12.2",
     "angular-ui-bootstrap": "^0.14.3",
     "bootstrap": "~3.3.6",
     "mousetrap": "~1.5.3",
-    "randomcolor": "~0.4.2"
+    "randomcolor": "~0.4.2",
+    "angular-route": "~1.4.8",
+    "raphael": "~2.1.4"
   }
 }
