@@ -683,12 +683,13 @@ function robutt_hunter_decision(){
     function bindNumbers () {
         for (var i = 0; i < 10; i++) {
             Mousetrap.bind(i.toString(), function(e, i) {
-                deleteWallById(i);
+                if($scope.human_hunter)
+                  deleteWallById(i);
             }, 'keyup');
         }
     }
     bindNumbers();
-    
+
     function vertWall (wall) {
         //console.log("vertWall");
         if (wall.direction == cardinalDirections.S) {
