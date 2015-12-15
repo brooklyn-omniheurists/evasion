@@ -6,57 +6,48 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Dr Ecco</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
+  <!--
+  <script src="../bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
+<link rel="stylesheet" href="../node_modules/normalize.css/normalize.css"/>
+  <link rel="stylesheet" href="../bower_components/html5-boilerplate/dist/css/main.css">-->
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="app.css">
-  <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
-
-
-  <title>Dr Ecco</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="../../style.css" media="screen" />
-
 </head>
 <body>
-
-
-  <div class="post">
+    <div class="post">
       <h1 class="title">Evasion V3</h1>
-  </div>
-  <div >
+    </div>
+    <div >
       <div class="instr">
           <p>
           <b>Instructions:</b> <br />
-          The gravity game is a two players game. One player (the Hider) puts two black holes in the gravitational field while the other
-          (the Seeker) can fire 5 shots with a missile and has to get the closest possible to the planet Earth.
+          The Blue marker in our game is the hunter, while the Green one is the prey. Your goal as a hunter is to catch the prey as soon as possible by building walls to let yourself bouncing around, while your goal as a prey is to avoid being caught as long as possible. The game won't stop until the hunter catches the prey.
           </p>
       </div>
       <div class="instr">
           <b>Rules of the game:</b>
           <ul>
-              <li><span style="color:red"> Rule #1: </span>Blah blah .</li>
-              <li><span style="color:red"> Rule #2: </span>Blah blah .</li>
+              <li><span style="color:red"> Rule #1: </span>The hunter moves twice as fast as the prey, but it changes direction only by bouncing off a wall, which means you cannot control the moves of it.</li>
+              <li><span style="color:red"> Rule #2: </span>The prey, on the other hand, can move in whichever direction it wants provided it doesn't pass through a wall.</li>
+              <li><span style="color:red"> Rule #3: </span>The hunter catches the prey by building horizontal and vertical walls as its current position to get close to the prey and trap it.</li>
+              <li><span style="color:red"> Rule #4: </span>You can specify the number of walls that the hunter can build(N) and the time interval between building consecutive walls(W).</li>
           </ul>
       </div>
       <div>
-          <b>The object of the game is to ......</b>. The winner is the one who blah blah...
+          <b>The object of the game is to ......</b> catch the prey.
       </div>
-  </div>
+    </div>
 
-  <!--[if lt IE 7]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-  <![endif]-->
-
-  <div ng-view id="gameArea">
-  <!-- In production use:
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
-  -->
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-route/angular-route.js"></script>
-  <script src="bower_components/raphael/raphael-min.js" type="text/javascript" charset="utf-8"></script>
+  <div ng-view></div>
+    
+  <script src="../node_modules/angular/angular.js"></script>
+  <script src="../node_modules/angular-route/angular-route.js"></script>
+<script src="../node_modules/angular-animate/angular-animate.js"></script>
+<script src="../node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script src="../node_modules/raphael/raphael-min.js" type="text/javascript" charset="utf-8"></script>
   <script src="../node_modules/mousetrap/mousetrap.min.js"></script>
   <script src="../node_modules/randomcolor/randomColor.js"></script>
 
@@ -67,18 +58,31 @@
   <script src="components/version/version-directive.js"></script>
   <script src="components/version/interpolate-filter.js"></script>
 
-</div>
+  <script src="../node_modules/angular-animate/angular-animate.js"></script>
+  <script src="../node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js"></script>
 
-<div class="post" style="position:absolute; top:80%; height:10%">
-<h2 class="title">Last 10 scores</h2>
-<?php
-  // functions.php in case of an opening in the same window
-  // ../../functions.php in case of an opening in a new window
-  include '../../lastScores.php';
-  getScores("EvasionV3");
-?>
-</div>
+  <div ng-controller="ModalDemoCtrl">
+      <script type="text/ng-template" id="winner_modal.html">
 
+          <div class="modal-body">
+              <img src="images/win.gif" style="width: 100%;">
+          </div>
+      </script>
 
+      <button type="button" class="btn btn-default" ng-click="open()" style="visibility: hidden;" id="modal"></button>
+    <h2 class="title">Last 10 scores</h2>
+    <?php
+      // functions.php in case of an opening in the same window
+      // ../../functions.php in case of an opening in a new window
+      include '../../lastScores.php';
+      getScores("EvasionV3");
+    ?>
+    </div>
+
+  <script>
+    window.onload = function() {
+      window.setTimeout(function(){document.getElementById("start_button").click();}, 10 );
+    }
+  </script>
 </body>
 </html>
