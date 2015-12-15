@@ -1,8 +1,8 @@
 Make Game Fit on Screen - Fixed, Could be Better
 Variable Wall, Cooldown time - Finished, need to make reset button
 Restrict number of walls to 10
-Show Score, Show Highest Scores - Incomplete
-Get Current Players Name/Choose to Change Name - Needs to be done
+Show Score, Show Highest Scores - Complete
+Get Current Players Name/Choose to Change Name - Can get players name, cannot change players name or get players name from website
 
 Hunter Random, Prey Random  - KILLED
 Choosing Robot or not       - DOUBLE KILL
