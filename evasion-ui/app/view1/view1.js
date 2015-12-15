@@ -42,9 +42,11 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   };
     $scope.open();
 
-    $scope.postScore = function (ws, wr) {
-      if (!wr || wr == "")
+    $scope.postScore = function (ws) {
+      var wr = gameValue.hunterName;
+      if (!wr || wr == "") {
         wr = 'guest';
+      }
         document.location.href="/drecco/index.php?task=EvasionV3&winner="+wr+"&ws="+ws;
     }
     
