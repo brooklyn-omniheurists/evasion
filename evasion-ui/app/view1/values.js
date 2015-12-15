@@ -9,5 +9,6 @@ angular
         maxNumWalls: 5,
         coolDownTime : 20,
         hunterName:"",
-        preyName:""
+        preyName:"",
+        won:false
 });

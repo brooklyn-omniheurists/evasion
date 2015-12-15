@@ -1,9 +1,9 @@
-<script type="text/ng-template" id="myModalContent.html">
+<script type="text/ng-template" id="myModalContent.html" >
           <div class="modal-header">
               <h3 class="modal-title">Game Settings</h3>
           </div>
           <div class="modal-body" >
-              <form class="form-horizontal">
+              <form id="myForm" class="form-horizontal">
                   <div class="form-group">
                     <label class="control-label" for="email">Players:</label>
                     <select ng-options="item for item in items" ng-model="selected.item"></select>
@@ -18,7 +18,9 @@
                   </div>
                   <div class="form-group">
                     <label> Max Number of Walls:</label>
-                    <input type="number" min="2" max="10" ng-model="gameValues.maxNumWalls"/>
+                    <input type="number" name="input" min="2" max="10" ng-model="gameValues.maxNumWalls" required/>
+                    <span class="error" ng-show="myForm.input.$error.number">
+      Not valid number! Must be less than 10</span>
                   </div>
                   <div class="form-group">
                     <label>Cool Down Time Between Wall Creation:</label>
@@ -47,8 +49,8 @@
     <div class="col-md-4 col-xs-4">
         <textarea id="text_area" rows="4" cols="50" readonly></textarea>
     <input type="text" ng-model="gameValues.score" readonly></input>
-    <button id="score" ng-click="postScore(gameValues.score)" type="button">Save Score</button>
-    <button id="reset" type="button" ng-click="open()">Reset</button>
+    <button class="btn btn-primary" id="score" ng-click="postScore(gameValues.score)" type="button" ng-disabled="!gameValues.won">Save Score</button>
+    <button class="btn btn-secondary" id="reset" type="button" ng-click="open()">Reset</button>
     </div>
      <div class="col-md-2 col-xs-2">
         <ul>

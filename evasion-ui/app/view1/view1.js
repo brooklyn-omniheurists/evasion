@@ -72,6 +72,7 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   var Wall;
 
   function set_default_positions(){
+    gameValues.won = false;
     tick = 0;
     playerPos = [0,0];
     playerPos2 = [230,200];
@@ -82,7 +83,7 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
     hunter_dir = cardinalDirections.SE;
     old_prey_dir = cardinalDirections.NW;
     time_since_last_wall = -1;
-    log.value = "Welcome";
+    log.value = "Welcome " + gameValues.hunterName;
   }
 
   function Wall(position, length, direction, id, path) {
@@ -662,11 +663,6 @@ function robutt_hunter_decision(){
   }
 }
 
-
-
-
-
-
     var playerPos=gameValues.playerPos;
     var playerPos2=gameValues.playerPos2;
     var wallIds =  {};
@@ -738,9 +734,6 @@ function robutt_hunter_decision(){
 
     var arenaSize = 300;
     var UNIT_SIZE = 1;
-    var playerDir=pi/4;
-    var samples=200;
-    var pi=Math.PI;
     var face = [];
     var mapball = null;
     var mapball2 = null;
@@ -767,6 +760,7 @@ function robutt_hunter_decision(){
     function update(){
       var hunter = moveHunter(playerPos, hunter_dir, walls.concat(globalWalls));
       var won = has_hunter_won(playerPos, playerPos2, walls);
+      gameValues.won = won;
       if(won){
         appendLog("Hunter has won! Took " + tick + " steps.");
         document.getElementById("modal").click();
@@ -913,9 +907,12 @@ angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, 
     item: $scope.items[0]
   };
   //console.log($uibModalInstance);
-
+    
   $scope.ok = function () {
       $scope.gameValues.score = 0;
+      if (gameValues.maxNumWalls > 10) {
+          gameValues.maxNumWalls = 10;
+      }
       $uibModalInstance.close($scope.selected.item);
   };
 
