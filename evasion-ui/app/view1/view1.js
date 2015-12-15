@@ -454,7 +454,9 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   };
 
   function has_wall_limited_exceeded(){
-      var MAX_WALLS = gameValues.maxNumWalls;
+    if(!gameValues.maxNumWalls)
+      gameValues.maxNumWalls = 10;
+    var MAX_WALLS = gameValues.maxNumWalls;
     var exceeded =  walls.length >= MAX_WALLS;
     if(exceeded){
       appendLog("You've built too many walls. Max is " + MAX_WALLS);
