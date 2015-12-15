@@ -3,7 +3,20 @@
               <h3 class="modal-title">Game Settings</h3>
           </div>
           <div class="modal-body" >
-              <form id="myForm" class="form-horizontal">
+              <div class="row">
+              <div class="col-lg-6 col-md-6 col-xs-6">
+                <h4 >Hunter:</h4>  
+                  <li> Press "V" to build vertical walls </li>
+                  <li> Press "H" to build horizontal walls </li>
+                  <li> Press [0-9] to delete corresponding walls</li> 
+                </div>
+                <div class="col-lg-6 col-md-6 col-xs-6">
+                  <h4>Prey:</h4>
+                    <li> Press arrow keys to move </li>
+                </div>
+                </div>
+              
+              <form id="myForm" class="form-horizontal" style="margin-left:5px; margin-top:10px">
                   <div class="form-group">
                     <label class="control-label" for="email">Players:</label>
                     <select ng-options="item for item in items" ng-model="selected.item"></select>
