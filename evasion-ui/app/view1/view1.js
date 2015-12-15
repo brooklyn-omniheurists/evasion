@@ -8,10 +8,10 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
     controller: 'View1Ctrl'
   });
 }])
-.controller('View1Ctrl', ['$scope','$uibModal','$rootScope','$log',function($scope,$uibModal,$rootScope,$log) {
+.controller('View1Ctrl', ['$scope','$uibModal','$rootScope','$log','constants','gameValues',function($scope,$uibModal,$rootScope,$log,constants,gameValues) {
 
-  $scope.items = ['Human vs Human', 'Human vs Robutt', 'Robutt vs Human'];
-
+  $scope.items = constants.playerOptions;
+    
   $scope.human_hunter = true;
   $scope.human_prey = true;
   $scope.started = false;
@@ -40,6 +40,7 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
       $scope.started = true;
     });
   };
+    $scope.open();
 
     $scope.postScore = function (ws, wr) {
       if (!wr || wr == "")
@@ -58,24 +59,12 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   };
 })();
 
-  var MAX_WALLS = 7;
-  var COOL_DOWN_TIME = 20;
-
   var WIDTH, HEIGHT, UNIT_SIZE;
   var hunter_pos, prey_pos, hunter_dir, time_since_last_wall;
   var tick = 0;
   var walls = []; $scope.walls = walls;
   var addend = 1;
-  var cardinalDirections = {
-      N: [0,-1],
-      S: [0,1],
-      E: [1,0],
-      W: [-1,0],
-      NE: [1,-1],
-      NW: [-1,-1],
-      SE: [1,1],
-      SW: [-1,1]
-  };
+  var cardinalDirections = constants.cardinalDirections;
   var Wall;
 
   function Wall(position, length, direction, id, path) {
@@ -85,7 +74,6 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
       direction: direction,
       id: id,
       path: path
-      //color: "red",
     }
   }
 
@@ -447,6 +435,7 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   };
 
   function has_wall_limited_exceeded(){
+      var MAX_WALLS = gameValues.maxNumWalls;
     var exceeded =  walls.length >= MAX_WALLS;
     if(exceeded){
       appendLog("You've built too many walls. Max is " + MAX_WALLS);
@@ -455,6 +444,7 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   }
 
   function gotta_wait(){
+      var COOL_DOWN_TIME = gameValues.coolDownTime;
     var waiting = (tick - time_since_last_wall) < COOL_DOWN_TIME;
     if(waiting){
       appendLog("Too hasty. Must wait " + COOL_DOWN_TIME + " steps before building a wall.");
@@ -897,8 +887,8 @@ angular.module('myApp.view1').controller('ModalStartCtrl', function ($scope, $ui
 // Please note that $modalInstance represents a modal window (instance) dependency.
 // It is not the same as the $uibModal service used above.
 
-angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {
-
+angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items, gameValues) {
+    $scope.gameValues = gameValues;
   $scope.items = items;
   $scope.selected = {
     item: $scope.items[0]
@@ -906,7 +896,8 @@ angular.module('myApp.view1').controller('ModalInstanceCtrl', function ($scope, 
   //console.log($uibModalInstance);
 
   $scope.ok = function () {
-    $uibModalInstance.close($scope.selected.item);
+      console.log(gameValues);
+      $uibModalInstance.close($scope.selected.item);
   };
 
   $scope.cancel = function () {
