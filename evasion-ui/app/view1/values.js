@@ -7,5 +7,7 @@ angular
         playerPos:[0,0],
         playerPos2:[230,200],
         maxNumWalls: 5,
-        coolDownTime : 20
+        coolDownTime : 20,
+        hunterName:"",
+        preyName:""
 });

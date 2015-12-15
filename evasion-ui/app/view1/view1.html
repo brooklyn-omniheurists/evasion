@@ -9,16 +9,21 @@
                     <select ng-options="item for item in items" ng-model="selected.item"></select>
                   </div>
                   <div class="form-group">
+                    <label>Hunter Name:</label>
+                    <input ng-model="gameValues.hunterName"/>
+                  </div>
+                  <div class="form-group">
+                    <label>Prey Name:</label>
+                    <input ng-model="gameValues.preyName"/>
+                  </div>
+                  <div class="form-group">
                     <label> Max Number of Walls:</label>
                     <input type="number" min="2" max="10" ng-model="gameValues.maxNumWalls"/>
-
                   </div>
                   <div class="form-group">
                     <label>Cool Down Time Between Wall Creation:</label>
                     <input type="number" min="1" max="1000" ng-model="gameValues.coolDownTime"/>
-
-                  </div>
-                 
+                  </div>                 
                 </form>
              
           </div>
@@ -42,7 +47,7 @@
     <div class="col-md-4 col-xs-4">
         <textarea id="text_area" rows="4" cols="50" readonly></textarea>
     <input type="text" ng-model="gameValues.score" readonly></input>
-    <button id="score" ng-click="postScore(gameValues.score, 'Amir')" type="button">Save Score</button>
+    <button id="score" ng-click="postScore(gameValues.score)" type="button">Save Score</button>
     <button id="reset" type="button" ng-click="open()">Reset</button>
     </div>
      <div class="col-md-2 col-xs-2">
