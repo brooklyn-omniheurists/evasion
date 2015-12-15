@@ -36,8 +36,10 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
       if(selectedItem === $scope.items[2])
         $scope.human_hunter = false;
       $scope.started = true;
+      set_default_positions();
     }, function (str) {
       $scope.started = true;
+      set_default_positions();
     });
   };
     $scope.open();
@@ -68,6 +70,20 @@ angular.module('myApp.view1', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
   var addend = 1;
   var cardinalDirections = constants.cardinalDirections;
   var Wall;
+
+  function set_default_positions(){
+    tick = 0;
+    playerPos = [0,0];
+    playerPos2 = [230,200];
+    while(walls.length > 0){
+      deleteWallById(walls[0].id);
+    }
+    $scope.walls = walls;
+    hunter_dir = cardinalDirections.SE;
+    old_prey_dir = cardinalDirections.NW;
+    time_since_last_wall = -1;
+    log.value = "Welcome";
+  }
 
   function Wall(position, length, direction, id, path) {
     return {
